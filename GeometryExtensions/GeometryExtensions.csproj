@@ -44,6 +44,10 @@
       <HintPath>C:\ObjectARX 2017\inc\AcDbMgd.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="acdbmgdbrep">
+      <HintPath>C:\ObjectARX 2017\inc\acdbmgdbrep.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="AcMgd">
       <HintPath>C:\ObjectARX 2017\inc\AcMgd.dll</HintPath>
       <Private>False</Private>
@@ -63,6 +67,7 @@
   <ItemGroup>
     <Compile Include="CircularArc2dExtension.cs" />
     <Compile Include="CircularArc3dExtension.cs" />
+    <Compile Include="Curve3dExtension.cs" />
     <Compile Include="EditorExtension.cs" />
     <Compile Include="EllipseExtension.cs" />
     <Compile Include="EulerAngles.cs" />
