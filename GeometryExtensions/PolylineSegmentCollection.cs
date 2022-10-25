@@ -56,6 +56,11 @@ namespace Gile.AutoCAD.Geometry
         /// <param name="pline">An instance of Polyline.</param>
         public PolylineSegmentCollection(Polyline pline)
         {
+            addPolyline(pline);
+        }
+
+        private void addPolyline(Polyline pline)
+        {
             int n = pline.NumberOfVertices - 1;
             for (int i = 0; i < n; i++)
             {
@@ -378,6 +383,27 @@ namespace Gile.AutoCAD.Geometry
                 pline.Closed = true;
             }
             return pline;
+        }
+
+        /// <summary>
+        /// Add a single polyline
+        /// </summary>
+        /// <param name="polyline"></param>
+        public void Add(Polyline polyline)
+        {
+            addPolyline(polyline);
+        }
+
+        /// <summary>
+        /// Add a collection of polylines.
+        /// </summary>
+        /// <param name="polylines"></param>
+        public void AddRange(IEnumerable<Polyline> polylines)
+        {
+            foreach (Polyline polyline in polylines)
+            {
+                addPolyline(polyline);
+            }
         }
 
         #endregion
