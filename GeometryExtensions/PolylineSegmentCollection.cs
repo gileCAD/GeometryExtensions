@@ -3,6 +3,7 @@ using Autodesk.AutoCAD.Geometry;
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Gile.AutoCAD.Geometry
 {
@@ -249,6 +250,20 @@ namespace Gile.AutoCAD.Geometry
         #endregion
 
         #region Methods
+
+        /// <summary>
+        /// Adds the polyline segments of <paramref name="pline"/> to the current collection.
+        /// </summary>
+        /// <param name="pline">An instance of Polyline.</param>
+        public void AddRange(Polyline pline) =>
+            AddRange(new PolylineSegmentCollection(pline));
+
+        /// <summary>
+        /// Adds the polyline segments of all polylines in <paramref name="plines"/> to the current collection.
+        /// </summary>
+        /// <param name="plines">A collection of instances of Polyline.</param>
+        public void AddRange(IEnumerable<Polyline> plines) =>
+            AddRange(plines.SelectMany(pl => new PolylineSegmentCollection(pl)));
 
         /// <summary>
         /// Gets the index of the closest segment to the specified point.
