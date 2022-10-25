@@ -9,7 +9,7 @@ namespace Gile.AutoCAD.Geometry
     public static class CurveExtension
     {
         /// <summary>
-        /// Checks if the point is within the distance Tolerance.EqualPoint from this curve.
+        /// Checks if <paramref name="point"/> is within the distance Tolerance.EqualPoint from this curve.
         /// </summary>
         /// <param name="curve">The instance of Curve to which this method applies.</param>
         /// <param name="point">Point to check against.</param>
@@ -22,7 +22,7 @@ namespace Gile.AutoCAD.Geometry
         /// Calls curve.IsPointOnCurve(Point3d point, Tolerance tolerance) with tolerance set to Global.
         /// </summary>
         /// <param name="curve">The instance of Curve to which this method applies.</param>
-        /// <param name="point"Point to check against.</param>
+        /// <param name="point">Point to check against.</param>
         /// <returns>true, if the condition is met; otherwise, false.</returns>
         public static bool IsPointOnCurve(this Curve curve, Point3d point) =>
             curve.IsPointOnCurve(point, Tolerance.Global);
