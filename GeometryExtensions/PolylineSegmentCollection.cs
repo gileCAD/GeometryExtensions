@@ -54,8 +54,22 @@ namespace Gile.AutoCAD.Geometry
         /// <summary>
         /// Creates a new instance of PolylineSegmentCollection.
         /// </summary>
+        /// <param name="curves">A curves IEnumerable.</param>
+        public PolylineSegmentCollection(IEnumerable<Curve> curves, Plane plane)
+        {
+            AddRangeFilteredCurves(curves, plane);
+        }
+
+        /// <summary>
+        /// Creates a new instance of PolylineSegmentCollection.
+        /// </summary>
         /// <param name="pline">An instance of Polyline.</param>
         public PolylineSegmentCollection(Polyline pline)
+        {
+            addPolyline(pline);
+        }
+
+        private void addPolyline(Polyline pline)
         {
             int n = pline.NumberOfVertices - 1;
             for (int i = 0; i < n; i++)
@@ -114,7 +128,16 @@ namespace Gile.AutoCAD.Geometry
         /// <param name="circle">An instance of Circle.</param>
         public PolylineSegmentCollection(Circle circle)
         {
-            Plane plane = new Plane(Point3d.Origin, circle.Normal);
+            addCircle(circle);
+        }
+
+        private void addCircle(Circle circle, Plane plane = null)
+        {
+            if (plane == null)
+            {
+                plane = new Plane(Point3d.Origin, circle.Normal);
+            }
+            
             Point2d cen = circle.Center.Convert2d(plane);
             Vector2d vec = new Vector2d(circle.Radius, 0.0);
             Add(new PolylineSegment(cen + vec, cen - vec, 1.0));
@@ -126,6 +149,11 @@ namespace Gile.AutoCAD.Geometry
         /// </summary>
         /// <param name="ellipse">An instance of Ellipse.</param>
         public PolylineSegmentCollection(Ellipse ellipse)
+        {
+            addEllipse(ellipse);
+        }
+
+        private void addEllipse(Ellipse ellipse)
         {
             // PolylineSegmentCollection figurant l'ellipse fermée
             double pi = Math.PI;
@@ -247,6 +275,38 @@ namespace Gile.AutoCAD.Geometry
             }
         }
 
+        /// <summary>
+        /// Creates a new instance of PolylineSegmentCollection.
+        /// </summary>
+        /// <param name="line"> An instance of Ellipse</param>
+        /// <param name="plane"> The plane you want your 3d line converted to </param>
+        public PolylineSegmentCollection(Line line, Plane plane)
+        {
+            addLine(line, plane);
+        }
+
+        private void addLine(Line line, Plane plane)
+        {
+            Point2d start = line.StartPoint.Convert2d(plane);
+            Point2d end = line.EndPoint.Convert2d(plane);
+            LineSegment2d lineSegment = new LineSegment2d(start, end);
+
+            addLineSegment(lineSegment);
+        }
+        /// <summary>
+        /// Creates a new instance of PolylineSegmentCollection.
+        /// </summary>
+        /// <param name="lineSegment2d"> </param>
+        public PolylineSegmentCollection(LineSegment2d lineSegment2d)
+        {
+            addLineSegment(lineSegment2d);
+        }
+
+        private void addLineSegment(LineSegment2d lineSegment2d)
+        {
+            Add(new PolylineSegment(lineSegment2d));
+        }
+
         #endregion
 
         #region Methods
@@ -264,6 +324,162 @@ namespace Gile.AutoCAD.Geometry
         /// <param name="plines">A collection of instances of Polyline.</param>
         public void AddRange(IEnumerable<Polyline> plines) =>
             AddRange(plines.SelectMany(pl => new PolylineSegmentCollection(pl)));
+
+        /// <summary>
+        /// Adds the curves in <paramref name="curves"/> to the current collection. The curves will be converted to the <paramref name="plane"/> if specified. Note: Xlines, Rays, Leaders are filtered, because they make no sence.  
+        /// </summary>
+        /// <param name="curves"></param>
+        /// <param name="plane"></param>
+        public void AddRangeFilteredCurves(IEnumerable<Curve> curves, Plane plane = null)
+        {
+            if (plane == null)
+            {
+                    plane = new Plane(new Point3d(), Vector3d.ZAxis);
+            }            
+
+            foreach (Curve curve in curves)
+            {
+                addFilteredCurve(curve, plane);
+            }
+        }
+        /// <summary>
+        ///  Adds the curve in <paramref name="curve"/> to the current collection. The curve will be converted to the <paramref name="plane"/> if specified. Note: Xlines, Rays, Leaders are filtered out, because they make no sence.  
+        /// </summary>
+        /// <param name="curve"></param>
+        /// <param name="plane"></param>
+        public void AddRangeFilteredCurve(Curve curve, Plane plane = null)
+        {
+            if (plane == null)
+            {
+                plane = new Plane(new Point3d(), Vector3d.ZAxis);
+            }
+
+            
+            addFilteredCurve(curve, plane);            
+        }
+
+        private void addFilteredCurve(Curve curve, Plane plane)
+        {
+            if (curve.IsArc())
+            {
+                addArc((Arc)curve, plane);
+            }
+            else if (curve.IsCircle())
+            {
+                addCircle((Circle)curve, plane);
+            }
+            else if (curve.IsEllipse())
+            {
+                addEllipse((Ellipse)curve);
+            }
+            else if (curve.IsLine())
+            {
+                addLine((Line)curve, plane);
+            }
+            else if (curve.IsPolyline())
+            {
+                addPolyline((Polyline)curve);
+            }
+            else if (curve.IsPolyline2d())
+            {
+                add2dPolyline((Polyline2d)curve, plane);
+            }
+            else if (curve.IsPolyline3d())
+            {
+                add3dPolyline((Polyline3d)curve, plane);
+            }
+            else if (curve.IsRay())
+            {
+                // skip, doens't make sense to add Rays
+            }
+            else if (curve.IsSpline())
+            {
+                // skip
+            }
+            else if (curve.IsXline())
+            {
+                // skip, doesn't make sense
+            }
+            else
+            {
+                // skip - not implemented
+            }
+        }
+
+        private void add3dPolyline(Polyline3d pline3d, Plane plane)
+        {
+            var vertices = pline3d.GetVertices()
+                                  .Select(v => new {
+                                      Position = v.Position.Convert2d(plane),
+                                      Bulge = 0,
+                                      StartWidth = 0,
+                                      EndWidth = 0})
+                                  .ToList();
+
+            for (int i = 0; i < vertices.Count; i++)
+            {
+                Add(new PolylineSegment(
+                        vertices[i].Position,
+                        vertices[i + 1].Position,
+                        vertices[i].Bulge,
+                        vertices[i].StartWidth,
+                        vertices[i].EndWidth
+                    ));
+            }
+
+            if (pline3d.Closed)
+            {
+                var lastVertex = vertices.Last();
+
+                Add(new PolylineSegment(
+                    lastVertex.Position,
+                    vertices.First().Position,
+                    lastVertex.Bulge,
+                    lastVertex.StartWidth,
+                    lastVertex.EndWidth));
+            }
+        }
+
+        private void add2dPolyline(Polyline2d pline2d, Plane plane)
+        {
+            var vertices = pline2d.GetVertices()
+                                  .Select(v => new { Position = v.Position.Convert2d(plane), 
+                                                     Bulge = v.Bulge, 
+                                                     StartWidth = v.StartWidth, 
+                                                     EndWidth = v.EndWidth })
+                                  .ToList();
+
+            for (int i = 0; i < vertices.Count; i++)
+            {
+                Add(new PolylineSegment(
+                        vertices[i].Position,
+                        vertices[i + 1].Position,
+                        vertices[i].Bulge,
+                        vertices[i].StartWidth,
+                        vertices[i].EndWidth
+                    ));
+            }
+
+            if (pline2d.Closed)
+            {
+                var lastVertex = vertices.Last();
+
+                Add(new PolylineSegment(
+                    lastVertex.Position,
+                    vertices.First().Position,
+                    lastVertex.Bulge,
+                    lastVertex.StartWidth,
+                    lastVertex.EndWidth));
+            }
+        }
+
+        private void addArc(Arc arc, Plane plane)
+        {
+            CircularArc2d circularArc2D = arc.ToCircularArc2d(plane);           
+            PolylineSegment segment = new PolylineSegment(circularArc2D);
+
+            Add(segment);
+        }
 
         /// <summary>
         /// Gets the index of the closest segment to the specified point.
