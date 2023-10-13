@@ -53,7 +53,7 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="AcMPolygonMGD">
-      <HintPath>C:\Program Files\Autodesk\AutoCAD 2017\AcMPolygonMGD.dll</HintPath>
+      <HintPath>F:\Program Files\Autodesk\AutoCAD 2024\AcMPolygonMGD.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System" />

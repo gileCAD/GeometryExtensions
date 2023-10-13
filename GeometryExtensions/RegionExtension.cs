@@ -13,17 +13,21 @@ namespace Gile.AutoCAD.Geometry
     public static class RegionExtension
     {
         /// <summary>
-        /// Gets the centroid of the region.
+        /// Gets the Centroid of the Region (WCS coordinates).
         /// </summary>
-        /// <param name="reg">The instance to which this method applies.</param>
-        /// <returns>The centroid of the region (WCS coordinates).</returns>
-        public static Point3d Centroid(this Region reg)
+        /// <param name="region">The instance to which this method applies.</param>
+        /// <returns>The centroid of the Region.</returns>
+        public static Point3d Centroid(this Region region)
         {
-            using (Solid3d sol = new Solid3d())
-            {
-                sol.Extrude(reg, 2.0, 0.0);
-                return sol.MassProperties.Centroid - reg.Normal;
-            }
+            var plane = region.GetPlane();
+            var coordinateSystem = plane.GetCoordinateSystem();
+            var origin = coordinateSystem.Origin;
+            var xAxis = coordinateSystem.Xaxis;
+            var yAxis = coordinateSystem.Yaxis;
+            return region
+                .AreaProperties(ref origin, ref xAxis, ref yAxis)
+                .Centroid
+                .Convert3d(region.GetPlane()); ;
         }
 
         /// <summary>
@@ -59,6 +63,29 @@ namespace Gile.AutoCAD.Geometry
                     {
                         yield return Curve.CreateFromGeCurve(curves3d.First());
                     }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets the PointContainment of the region for the supplied point. 
+        /// </summary>
+        /// <param name="region">The instance to which this method applies.</param>
+        /// <param name="point">The point to be evaluated.</param>
+        /// <returns>The PointContainment value.</returns>
+        public static PointContainment GetPointContainment(this Region region, Point3d point)
+        {
+            using (Brep brep = new Brep(region))
+            using (BrepEntity entity = brep.GetPointContainment(point, out PointContainment result))
+            {
+                switch (entity)
+                {
+                    case Autodesk.AutoCAD.BoundaryRepresentation.Face _:
+                        return PointContainment.Inside;
+                    case Edge _:
+                        return PointContainment.OnBoundary;
+                    default:
+                        return PointContainment.Outside;
                 }
             }
         }
