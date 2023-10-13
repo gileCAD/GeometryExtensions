@@ -27,7 +27,7 @@ namespace Gile.AutoCAD.Geometry
             return region
                 .AreaProperties(ref origin, ref xAxis, ref yAxis)
                 .Centroid
-                .Convert3d(region.GetPlane()); ;
+                .Convert3d(plane); ;
         }
 
         /// <summary>
