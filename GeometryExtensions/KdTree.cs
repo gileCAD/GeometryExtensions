@@ -1,7 +1,5 @@
 ﻿using Autodesk.AutoCAD.Geometry;
 
-using Gile.AutoCAD.Geometry;
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
