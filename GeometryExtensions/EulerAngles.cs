@@ -63,7 +63,7 @@ namespace Gile.AutoCAD.Geometry
         public EulerAngles(Matrix3d transform)
         {
             if (!transform.IsScaledOrtho())
-                throw new ArgumentException("Matrice non orthogonale.");
+                throw new ArgumentException("Non orthogonal matrix.");
 
             var cs = transform.CoordinateSystem3d;
             var xAxis = cs.Xaxis.GetNormal();
