@@ -74,6 +74,7 @@
     <Compile Include="EulerAngles.cs" />
     <Compile Include="GeometryExtension.cs" />
     <Compile Include="HatchExtension.cs" />
+    <Compile Include="KdTree.cs" />
     <Compile Include="Point2dCollectionExtension.cs" />
     <Compile Include="Point2dExtension.cs" />
     <Compile Include="Point3dCollectionExtension.cs" />
