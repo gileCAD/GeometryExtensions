@@ -1,7 +1,5 @@
 ﻿using Autodesk.AutoCAD.Geometry;
 
-using Gile.AutoCAD.Geometry;
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,44 +30,28 @@ namespace Gile.AutoCAD.Geometry
 
         #region Constructor
 
-        ///<summary>
+        /// <summary>
         /// Creates a new instance of KdTree.
         /// </summary>
-        /// <param name="source">Collection to fill the tree.</param>
-        /// <param name="getPosition">Function which returns the location of the object.</param>
-        /// <param name="dimension">Dimension of the tree (2 or 3)</param>
+        /// <param name="source">The collection of objects to fill the tree.</param>
+        /// <param name="getPosition">A function which returns the position of the object.</param>
+        /// <param name="dimension">The dimension of the tree (2 or 3)</param>
         /// <exception cref="ArgumentNullException">Thrown if source is null.</exception>
         /// <exception cref="ArgumentOutOfRangeException">Thrown if dimension is lower than2 or greater than 3.</exception>
         public KdTree(IEnumerable<T> source, Func<T, Point3d> getPosition, int dimension)
         {
             if (source == null)
-            {
                 throw new ArgumentNullException("points");
-            }
             if (getPosition == null)
-            {
                 throw new ArgumentNullException("getPosition");
-            }
             if (dimension < 2 || 3 < dimension)
-            {
                 throw new ArgumentOutOfRangeException("dimension");
-            }
-
             this.getPosition = getPosition;
             this.dimension = dimension;
             if (dimension == 2)
-            {
-                sqrDist = (p1, p2) =>
-                    (p1.X - p2.X) * (p1.X - p2.X)
-                    + (p1.Y - p2.Y) * (p1.Y - p2.Y);
-            }
+                sqrDist = SqrDistance2d;
             else
-            {
-                sqrDist = (p1, p2) =>
-                    (p1.X - p2.X) * (p1.X - p2.X)
-                    + (p1.Y - p2.Y) * (p1.Y - p2.Y)
-                    + (p1.Z - p2.Z) * (p1.Z - p2.Z);
-            }
+                sqrDist = SqrDistance3d;
             int numProc = Environment.ProcessorCount;
             parallelDepth = -1;
             while (numProc >> ++parallelDepth > 1) ;
@@ -177,9 +159,7 @@ namespace Gile.AutoCAD.Geometry
         private T GetNeighbour(Point3d center, TreeNode<T> node, T currentBest, double bestDist)
         {
             if (node == null)
-            {
                 return currentBest;
-            }
             var current = node.Value;
             var currentPosition = getPosition(current);
             int d = node.Depth % dimension;
@@ -194,14 +174,8 @@ namespace Gile.AutoCAD.Geometry
             dist = coordCen - coordCur;
             if (bestDist < dist * dist)
             {
-                if (coordCen < coordCur)
-                {
-                    currentBest = GetNeighbour(center, node.LeftChild, currentBest, bestDist);
-                }
-                else
-                {
-                    currentBest = GetNeighbour(center, node.RightChild, currentBest, bestDist);
-                }
+                currentBest = GetNeighbour(
+                    center, coordCen < coordCur ? node.LeftChild : node.RightChild, currentBest, bestDist);
             }
             else
             {
@@ -214,10 +188,7 @@ namespace Gile.AutoCAD.Geometry
 
         private void GetNeighboursAtDistance(Point3d center, double radius, TreeNode<T> node, List<T> items)
         {
-            if (node == null)
-            {
-                return;
-            }
+            if (node == null) return;
             var current = node.Value;
             var currentPosition = getPosition(current);
             double dist = sqrDist(center, currentPosition);
@@ -249,10 +220,7 @@ namespace Gile.AutoCAD.Geometry
 
         private void GetKNeighbours(Point3d center, int number, TreeNode<T> node, List<(double Distance, T)> items)
         {
-            if (node == null)
-            {
-                return;
-            }
+            if (node == null) return;
             T current = node.Value;
             Point3d currentPosition = getPosition(current);
             double dist = sqrDist(center, currentPosition);
@@ -263,28 +231,19 @@ namespace Gile.AutoCAD.Geometry
             }
             else if (cnt < number)
             {
-                int i = items.FindIndex(x => x.Distance < dist);
-                if (i == -1)
+                if (dist > items[0].Distance)
                 {
-                    items.Add((dist, current));
+                    items.Insert(0, (dist, current));
                 }
                 else
                 {
-                    items.Insert(i, (dist, current));
+                    items.Add((dist, current));
                 }
             }
             else if (dist < items[0].Distance)
             {
-                items.RemoveAt(0);
-                int i = items.FindIndex(x => x.Distance < dist);
-                if (i == -1)
-                {
-                    items.Add((dist, current));
-                }
-                else
-                {
-                    items.Insert(i, (dist, current));
-                }
+                items[0] = (dist, current);
+                items.Sort((x, y) => y.Distance.CompareTo(x.Distance));
             }
             int d = node.Depth % dimension;
             double coordCen = center[d];
@@ -311,42 +270,47 @@ namespace Gile.AutoCAD.Geometry
         private void FindRange(Point3d lowerLeft, Point3d upperRight, TreeNode<T> node, List<T> items)
         {
             if (node == null)
-            {
                 return;
-            }
             T current = node.Value;
             Point3d currentPosition = getPosition(current);
             if (dimension == 2)
             {
-                if (lowerLeft.X <= currentPosition.X && currentPosition.X <= upperRight.X
-                    && lowerLeft.Y <= currentPosition.Y && currentPosition.Y <= upperRight.Y)
-                {
+                if (lowerLeft.X <= currentPosition.X && currentPosition.X <= upperRight.X &&
+                    lowerLeft.Y <= currentPosition.Y && currentPosition.Y <= upperRight.Y)
                     items.Add(current);
-                }
             }
             else
             {
-                if (lowerLeft.X <= currentPosition.X && currentPosition.X <= upperRight.X
-                    && lowerLeft.Y <= currentPosition.Y && currentPosition.Y <= upperRight.Y
-                    && lowerLeft.Z <= currentPosition.Z && currentPosition.Z <= upperRight.Z)
-                {
+                if (lowerLeft.X <= currentPosition.X && currentPosition.X <= upperRight.X &&
+                    lowerLeft.Y <= currentPosition.Y && currentPosition.Y <= upperRight.Y &&
+                    lowerLeft.Z <= currentPosition.Z && currentPosition.Z <= upperRight.Z)
                     items.Add(current);
-                }
             }
             int d = node.Depth % dimension;
             if (upperRight[d] < currentPosition[d])
-            {
                 FindRange(lowerLeft, upperRight, node.LeftChild, items);
-            }
             else if (lowerLeft[d] > currentPosition[d])
-            {
                 FindRange(lowerLeft, upperRight, node.RightChild, items);
-            }
             else
             {
                 FindRange(lowerLeft, upperRight, node.LeftChild, items);
                 FindRange(lowerLeft, upperRight, node.RightChild, items);
             }
+        }
+
+        private double SqrDistance2d(Point3d p1, Point3d p2)
+        {
+            return
+                (p1.X - p2.X) * (p1.X - p2.X) +
+                (p1.Y - p2.Y) * (p1.Y - p2.Y);
+        }
+
+        private double SqrDistance3d(Point3d p1, Point3d p2)
+        {
+            return
+                (p1.X - p2.X) * (p1.X - p2.X) +
+                (p1.Y - p2.Y) * (p1.Y - p2.Y) +
+                (p1.Z - p2.Z) * (p1.Z - p2.Z);
         }
 
         //Credit: Tony Tanzillo
