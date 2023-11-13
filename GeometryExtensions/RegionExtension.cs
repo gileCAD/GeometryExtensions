@@ -31,9 +31,17 @@ namespace Gile.AutoCAD.Geometry
         }
 
         /// <summary>
+        /// Gets the distance of the Region's plane from the WCS origin.
+        /// </summary>
+        /// <param name="region">The instance to which this method applies.</param>
+        /// <returns>The elevation of the Region.</returns>
+        public static double Elevation(this Region region) =>
+            region.GetPlane().PointOnPlane.TransformBy(Matrix3d.WorldToPlane(region.Normal)).Z;
+
+        /// <summary>
         /// Gets the curves constituting the boundaries of the region.
         /// </summary>
-        /// <param name="region">The region this method applies to.</param>
+        /// <param name="region">The instance to which this method applies.</param>
         /// <returns>Curve collection.</returns>
         public static IEnumerable<Curve> GetCurves(this Region region)
         {
@@ -70,7 +78,7 @@ namespace Gile.AutoCAD.Geometry
         /// <summary>
         /// Gets the hatch loops data for the supplied region.
         /// </summary>
-        /// <param name="region">The region this method applies to.</param>
+        /// <param name="region">The instance to which this method applies.</param>
         /// <returns>A collection of tuples containing the loop data.</returns>
         public static IEnumerable<(HatchLoopTypes, Curve2dCollection, IntegerCollection)> GetHatchLoops(this Region region)
         {
