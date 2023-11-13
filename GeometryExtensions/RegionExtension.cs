@@ -27,7 +27,7 @@ namespace Gile.AutoCAD.Geometry
             return region
                 .AreaProperties(ref origin, ref xAxis, ref yAxis)
                 .Centroid
-                .Convert3d(plane); ;
+                .Convert3d(plane);
         }
 
         /// <summary>
@@ -62,6 +62,84 @@ namespace Gile.AutoCAD.Geometry
                     else
                     {
                         yield return Curve.CreateFromGeCurve(curves3d.First());
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets the hatch loops data for the supplied region.
+        /// </summary>
+        /// <param name="region">The region this method applies to.</param>
+        /// <returns>A collection of tuples containing the loop data.</returns>
+        public static IEnumerable<(HatchLoopTypes, Curve2dCollection, IntegerCollection)> GetHatchLoops(this Region region)
+        {
+            var plane = new Plane(Point3d.Origin, region.Normal);
+
+            using (var brep = new Brep(region))
+            {
+                foreach (var complex in brep.Complexes)
+                {
+                    foreach (var loop in complex.Shells.First().Faces.First().Loops)
+                    {
+                        var edgePtrCollection = new Curve2dCollection();
+                        var edgeTypeCollection = new IntegerCollection();
+                        foreach (var edge in loop.Edges.Select(e => ((ExternalCurve3d)e.Curve).NativeCurve).ToOrderedArray())
+                        {
+                            switch (edge)
+                            {
+                                case LineSegment3d lineSegment3D:
+                                    edgePtrCollection.Add(
+                                        new LineSegment2d(
+                                            lineSegment3D.StartPoint.Convert2d(plane),
+                                            lineSegment3D.EndPoint.Convert2d(plane)));
+                                    edgeTypeCollection.Add(1);
+                                    break;
+                                case CircularArc3d circularArc3D:
+                                    edgePtrCollection.Add(
+                                        new CircularArc2d(
+                                            circularArc3D.Center.Convert2d(plane),
+                                            circularArc3D.Radius,
+                                            circularArc3D.StartAngle,
+                                            circularArc3D.EndAngle,
+                                            circularArc3D.ReferenceVector.Convert2d(plane),
+                                            false));
+                                    edgeTypeCollection.Add(2);
+                                    break;
+                                case EllipticalArc3d ellipticalArc3D:
+                                    edgePtrCollection.Add(
+                                        new EllipticalArc2d(
+                                            ellipticalArc3D.Center.Convert2d(plane),
+                                            ellipticalArc3D.MajorAxis.Convert2d(plane),
+                                            ellipticalArc3D.MinorAxis.Convert2d(plane),
+                                            ellipticalArc3D.MajorRadius,
+                                            ellipticalArc3D.MinorRadius,
+                                            ellipticalArc3D.StartAngle,
+                                            ellipticalArc3D.EndAngle));
+                                    edgeTypeCollection.Add(3);
+                                    break;
+                                case NurbCurve3d nurbCurve3D:
+                                    var ctrlPts = new Point2dCollection();
+                                    for (int i = 0; i < nurbCurve3D.NumberOfControlPoints; i++)
+                                    {
+                                        ctrlPts.Add(nurbCurve3D.ControlPointAt(i).Convert2d(plane));
+                                    }
+                                    edgePtrCollection.Add(
+                                        new NurbCurve2d(
+                                            nurbCurve3D.Degree,
+                                            nurbCurve3D.Knots,
+                                            ctrlPts,
+                                            nurbCurve3D.IsPeriodic(out double _)));
+                                    edgeTypeCollection.Add(4);
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                        if (loop.LoopType == LoopType.LoopExterior)
+                            yield return (HatchLoopTypes.External, edgePtrCollection, edgeTypeCollection);
+                        else
+                            yield return (HatchLoopTypes.Default, edgePtrCollection, edgeTypeCollection);
                     }
                 }
             }
