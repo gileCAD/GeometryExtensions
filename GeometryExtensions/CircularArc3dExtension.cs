@@ -4,7 +4,7 @@ using Autodesk.AutoCAD.Geometry;
 namespace Gile.AutoCAD.Geometry
 {
     /// <summary>
-    /// Provides extension methods for the CircularArc2d type.
+    /// Provides extension methods for the CircularArc3d type.
     /// </summary>
     public static class CircularArc3dExtension
     {
