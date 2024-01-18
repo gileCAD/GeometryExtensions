@@ -21,7 +21,11 @@ namespace Gile.AutoCAD.Geometry
         /// <param name="vector">The instance to which this method applies.</param>
         /// <param name="plane">The plane the Point2d lies on.</param>
         /// <returns>The corresponding Vector3d.</returns>
-        public static Vector3d Convert3d(this Vector2d vector, Plane plane) =>
-            vector.Convert3d().TransformBy(Matrix3d.PlaneToWorld(plane));
+        /// <exception cref="System.ArgumentNullException">ArgumentException is thrown if <paramref name="plane"/> is null.</exception>
+        public static Vector3d Convert3d(this Vector2d vector, Plane plane)
+        {
+            Assert.IsNotNull(plane, nameof(plane));
+            return vector.Convert3d().TransformBy(Matrix3d.PlaneToWorld(plane));
+        }
     }
 }

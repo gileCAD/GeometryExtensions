@@ -78,8 +78,10 @@ namespace Gile.AutoCAD.Geometry
         /// Creates a new instance of PolylineSegment.
         /// </summary>
         /// <param name="line">An instance of LineSegment2d.</param>
+        /// <exception cref="ArgumentNullException">ArgumentException is thrown if <paramref name="line"/> is null.</exception>
         public PolylineSegment(LineSegment2d line)
         {
+            Assert.IsNotNull(line, nameof(line));
             StartPoint = line.StartPoint;
             EndPoint = line.EndPoint;
             Bulge = 0.0;
@@ -91,8 +93,10 @@ namespace Gile.AutoCAD.Geometry
         /// Creates a new instance of PolylineSegment.
         /// </summary>
         /// <param name="arc">An instance of CircularArc2d.</param>
+        /// <exception cref="ArgumentNullException">ArgumentException is thrown if <paramref name="arc"/> is null.</exception>
         public PolylineSegment(CircularArc2d arc)
         {
+            Assert.IsNotNull(arc, nameof(arc));
             StartPoint = arc.StartPoint;
             EndPoint = arc.EndPoint;
             Bulge = Math.Tan((arc.EndAngle - arc.StartAngle) / 4.0);
@@ -173,8 +177,7 @@ namespace Gile.AutoCAD.Geometry
         /// <returns>true si les objets sont considérés égaux ; null sinon.</returns>
         public override bool Equals(object obj)
         {
-            PolylineSegment seg = obj as PolylineSegment;
-            if (seg == null) return false;
+            if (!(obj is PolylineSegment seg)) return false;
             if (seg.GetHashCode() != GetHashCode()) return false;
             if (!StartPoint.IsEqualTo(seg.StartPoint)) return false;
             if (!EndPoint.IsEqualTo(seg.EndPoint)) return false;
@@ -187,7 +190,7 @@ namespace Gile.AutoCAD.Geometry
         /// <summary>
         /// Serves as the PolylineSegment hash function.
         /// </summary>
-        /// <returns>A hash code for the current PolylineSegment..</returns>
+        /// <returns>A hash code for the current PolylineSegment.</returns>
         public override int GetHashCode() =>
             StartPoint.GetHashCode() ^
             EndPoint.GetHashCode() ^

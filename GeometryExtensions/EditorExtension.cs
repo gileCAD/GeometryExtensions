@@ -16,8 +16,10 @@ namespace Gile.AutoCAD.Geometry
         /// </summary>
         /// <param name="ed">The instance to which this method applies.</param>
         /// <returns>The UCS to WCS transformation matrix.</returns>
+        /// <exception cref="System.ArgumentNullException">ArgumentNullException is thrown if <paramref name="ed"/> is null.</exception>
         public static Matrix3d UCS2WCS(this Editor ed)
         {
+            Assert.IsNotNull(ed, nameof(ed));
             return ed.CurrentUserCoordinateSystem;
         }
 
@@ -26,8 +28,10 @@ namespace Gile.AutoCAD.Geometry
         /// </summary>
         /// <param name="ed">The instance to which this method applies.</param>
         /// <returns>The WCS to UCS transformation matrix.</returns>
+        /// <exception cref="System.ArgumentNullException">ArgumentNullException is thrown if <paramref name="ed"/> is null.</exception>
         public static Matrix3d WCS2UCS(this Editor ed)
         {
+            Assert.IsNotNull(ed, nameof(ed));
             return ed.CurrentUserCoordinateSystem.Inverse();
         }
 
@@ -36,8 +40,10 @@ namespace Gile.AutoCAD.Geometry
         /// </summary>
         /// <param name="ed">The instance to which this method applies.</param>
         /// <returns>The DCS to WCS transformation matrix.</returns>
+        /// <exception cref="System.ArgumentNullException">ArgumentNullException is thrown if <paramref name="ed"/> is null.</exception>
         public static Matrix3d DCS2WCS(this Editor ed)
         {
+            Assert.IsNotNull(ed, nameof(ed));
             Matrix3d retVal = new Matrix3d();
             bool tilemode = ed.Document.Database.TileMode;
             if (!tilemode)
@@ -59,8 +65,10 @@ namespace Gile.AutoCAD.Geometry
         /// </summary>
         /// <param name="ed">The instance to which this method applies.</param>
         /// <returns>The WCS to DCS transformation matrix.</returns>
+        /// <exception cref="System.ArgumentNullException">ArgumentNullException is thrown if <paramref name="ed"/> is null.</exception>
         public static Matrix3d WCS2DCS(this Editor ed)
         {
+            Assert.IsNotNull(ed, nameof(ed));
             return ed.DCS2WCS().Inverse();
         }
 
@@ -69,12 +77,14 @@ namespace Gile.AutoCAD.Geometry
         /// </summary>
         /// <param name="ed">The instance to which this method applies.</param>
         /// <returns>The DCS to PSDCS transformation matrix.</returns>
+        /// <exception cref="System.ArgumentNullException">ArgumentNullException is thrown if <paramref name="ed"/> is null.</exception>
         /// <exception cref=" Autodesk.AutoCAD.Runtime.Exception">
         /// eNotInPaperSpace is thrown if this method is called form Model Space.</exception>
         /// <exception cref=" Autodesk.AutoCAD.Runtime.Exception">
         /// eCannotChangeActiveViewport is thrown if there is none floating viewport in the current layout.</exception>
         public static Matrix3d DCS2PSDCS(this Editor ed)
         {
+            Assert.IsNotNull(ed, nameof(ed));
             Database db = ed.Document.Database;
             if (db.TileMode)
                 throw new AcRx.Exception(AcRx.ErrorStatus.NotInPaperspace);
@@ -104,12 +114,14 @@ namespace Gile.AutoCAD.Geometry
         /// </summary>
         /// <param name="ed">The instance to which this method applies.</param>
         /// <returns>The PSDCS to DCS transformation matrix.</returns>
+        /// <exception cref="System.ArgumentNullException">ArgumentNullException is thrown if <paramref name="ed"/> is null.</exception>
         /// <exception cref=" Autodesk.AutoCAD.Runtime.Exception">
         /// eNotInPaperSpace is thrown if this method is called form Model Space.</exception>
         /// <exception cref=" Autodesk.AutoCAD.Runtime.Exception">
         /// eCannotChangeActiveViewport is thrown if there is none floating viewport in the current layout.</exception>
         public static Matrix3d PSDCS2DCS(this Editor ed)
         {
+            Assert.IsNotNull(ed, nameof(ed));
             return ed.DCS2PSDCS().Inverse();
         }
     }

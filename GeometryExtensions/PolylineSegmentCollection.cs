@@ -37,8 +37,10 @@ namespace Gile.AutoCAD.Geometry
         /// Creates a new instance of PolylineSegmentCollection.
         /// </summary>
         /// <param name="segments">A sequence of PolylineSegment.</param>
+        /// <exception cref="ArgumentNullException">ArgumentException is thrown if <paramref name="segments"/> is null.</exception>
         public PolylineSegmentCollection(IEnumerable<PolylineSegment> segments)
         {
+            Assert.IsNotNull(segments, nameof(segments));
             AddRange(segments);
         }
 
@@ -46,8 +48,10 @@ namespace Gile.AutoCAD.Geometry
         /// Creates a new instance of PolylineSegmentCollection.
         /// </summary>
         /// <param name="segments">A PolylineSegment array.</param>
+        /// <exception cref="ArgumentNullException">ArgumentException is thrown if <paramref name="segments"/> is null.</exception>
         public PolylineSegmentCollection(params PolylineSegment[] segments)
         {
+            Assert.IsNotNull(segments, nameof(segments));
             AddRange(segments);
         }
 
@@ -55,8 +59,10 @@ namespace Gile.AutoCAD.Geometry
         /// Creates a new instance of PolylineSegmentCollection.
         /// </summary>
         /// <param name="pline">An instance of Polyline.</param>
+        /// <exception cref="ArgumentNullException">ArgumentException is thrown if <paramref name="pline"/> is null.</exception>
         public PolylineSegmentCollection(Polyline pline)
         {
+            Assert.IsNotNull(pline, nameof(pline));
             int n = pline.NumberOfVertices - 1;
             for (int i = 0; i < n; i++)
             {
@@ -82,8 +88,10 @@ namespace Gile.AutoCAD.Geometry
         /// Creates a new instance of PolylineSegmentCollection.
         /// </summary>
         /// <param name="pline">An instance of Polyline2d.</param>
+        /// <exception cref="ArgumentNullException">ArgumentException is thrown if <paramref name="pline"/> is null.</exception>
         public PolylineSegmentCollection(Polyline2d pline)
         {
+            Assert.IsNotNull(pline, nameof(pline));
             Vertex2d[] vertices = pline.GetVertices().ToArray();
             int n = vertices.Length - 1;
             for (int i = 0; i < n; i++)
@@ -112,8 +120,10 @@ namespace Gile.AutoCAD.Geometry
         /// Creates a new instance of PolylineSegmentCollection.
         /// </summary>
         /// <param name="circle">An instance of Circle.</param>
+        /// <exception cref="ArgumentNullException">ArgumentException is thrown if <paramref name="circle"/> is null.</exception>
         public PolylineSegmentCollection(Circle circle)
         {
+            Assert.IsNotNull(circle, nameof(circle));
             Plane plane = new Plane(Point3d.Origin, circle.Normal);
             Point2d cen = circle.Center.Convert2d(plane);
             Vector2d vec = new Vector2d(circle.Radius, 0.0);
@@ -125,9 +135,10 @@ namespace Gile.AutoCAD.Geometry
         /// Creates a new instance of PolylineSegmentCollection.
         /// </summary>
         /// <param name="ellipse">An instance of Ellipse.</param>
+        /// <exception cref="ArgumentNullException">ArgumentException is thrown if <paramref name="ellipse"/> is null.</exception>
         public PolylineSegmentCollection(Ellipse ellipse)
         {
-            // PolylineSegmentCollection figurant l'ellipse fermée
+            Assert.IsNotNull(ellipse, nameof(ellipse));
             double pi = Math.PI;
             Plane plane = new Plane(Point3d.Origin, ellipse.Normal);
             Point3d cen3d = ellipse.Center;
@@ -221,7 +232,7 @@ namespace Gile.AutoCAD.Geometry
                     this[startIndex].Bulge = this[startIndex].Bulge * (1.0 - startParam);
                 }
 
-                if (endParam != 1.0) //(endParam != 0.0)
+                if (endParam != 1.0)
                 {
                     this[endIndex].EndPoint = endPoint;
                     this[endIndex].Bulge = this[endIndex].Bulge * endParam;
@@ -255,15 +266,23 @@ namespace Gile.AutoCAD.Geometry
         /// Adds the polyline segments of <paramref name="pline"/> to the current collection.
         /// </summary>
         /// <param name="pline">An instance of Polyline.</param>
-        public void AddRange(Polyline pline) =>
+        /// <exception cref="ArgumentNullException">ArgumentException is thrown if <paramref name="pline"/> is null.</exception>
+        public void AddRange(Polyline pline)
+        {
+            Assert.IsNotNull(pline, nameof(pline));
             AddRange(new PolylineSegmentCollection(pline));
+        }
 
         /// <summary>
         /// Adds the polyline segments of all polylines in <paramref name="plines"/> to the current collection.
         /// </summary>
         /// <param name="plines">A collection of instances of Polyline.</param>
-        public void AddRange(IEnumerable<Polyline> plines) =>
+        /// <exception cref="ArgumentNullException">ArgumentException is thrown if <paramref name="plines"/> is null.</exception>
+        public void AddRange(IEnumerable<Polyline> plines)
+        {
+            Assert.IsNotNull(plines, nameof(plines));
             AddRange(plines.SelectMany(pl => new PolylineSegmentCollection(pl)));
+        }
 
         /// <summary>
         /// Gets the index of the closest segment to the specified point.

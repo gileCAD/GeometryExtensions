@@ -14,8 +14,10 @@ namespace Gile.AutoCAD.Geometry
         /// </summary>
         /// <param name="ellipse">The instance to which this method applies.</param>
         /// <returns>A new Polyline instance.</returns>
+        /// <exception cref="ArgumentNullException">ArgumentNullException is thrown if <paramref name="ellipse"/> is null.</exception>
         public static Polyline ToPolyline(this Ellipse ellipse)
         {
+            Assert.IsNotNull(ellipse, nameof(ellipse));
             Polyline pline = new PolylineSegmentCollection(ellipse).ToPolyline();
             pline.Closed = ellipse.Closed;
             pline.Normal = ellipse.Normal;
@@ -29,8 +31,12 @@ namespace Gile.AutoCAD.Geometry
         /// <param name="ellipse">The instance to which this method applies.</param>
         /// <param name="angle">Angle.</param>
         /// <returns>The parameter corresponding to the angle.</returns>
-        public static double GetParamAtAngle(this Ellipse ellipse, double angle) =>
-            Math.Atan2(ellipse.MajorRadius * Math.Sin(angle), ellipse.MinorRadius * Math.Cos(angle));
+        /// <exception cref="ArgumentNullException">ArgumentNullException is thrown if <paramref name="ellipse"/> is null.</exception>
+        public static double GetParamAtAngle(this Ellipse ellipse, double angle)
+        {
+            Assert.IsNotNull(ellipse, nameof(ellipse));
+            return Math.Atan2(ellipse.MajorRadius * Math.Sin(angle), ellipse.MinorRadius * Math.Cos(angle));
+        }
 
         /// <summary>
         /// Gets the ellipse angle corresponding to the specified parameter.
@@ -38,7 +44,11 @@ namespace Gile.AutoCAD.Geometry
         /// <param name="ellipse">The instance to which this method applies.</param>
         /// <param name="param">Parameter.</param>
         /// <returns>The angle corresponding to the parameter.</returns>
-        public static double GetAngleAtParam(this Ellipse ellipse, double param) =>
-            Math.Atan2(ellipse.MinorRadius * Math.Sin(param), ellipse.MajorRadius * Math.Cos(param));
+        /// <exception cref="ArgumentNullException">ArgumentNullException is thrown if <paramref name="ellipse"/> is null.</exception>
+        public static double GetAngleAtParam(this Ellipse ellipse, double param)
+        {
+            Assert.IsNotNull(ellipse, nameof(ellipse));
+            return Math.Atan2(ellipse.MinorRadius * Math.Sin(param), ellipse.MajorRadius * Math.Cos(param));
+        }
     }
 }

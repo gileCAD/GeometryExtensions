@@ -15,33 +15,10 @@ namespace Gile.AutoCAD.Geometry
         /// </summary>
         /// <param name="source">The instance to which this method applies.</param>
         /// <returns>A sequence of distinct points.</returns>
-        /// <exception cref="ArgumentNullException">ArgumentException is thrown if the collection is null.</exception>
-        public static IEnumerable<Point2d> RemoveDuplicates(this Point2dCollection source) =>
-            source.RemoveDuplicates(Tolerance.Global);
-
-        /// <summary>
-        /// Removes duplicated points using the specified Tolerance.
-        /// </summary>
-        /// <param name="source">The instance to which this method applies.</param>
-        /// <param name="tolerance">The Tolerance to be used in equality comparison.</param>
-        /// <returns>A sequence of distinct points.</returns>
-        /// <exception cref="ArgumentNullException">ArgumentException is thrown if the collection is null.</exception>
-        public static IEnumerable<Point2d> RemoveDuplicates(this Point2dCollection source, Tolerance tolerance)
+        /// <exception cref="ArgumentNullException">ArgumentException is thrown if <paramref name="source"/> is null.</exception>
+        public static IEnumerable<Point2d> RemoveDuplicates(this Point2dCollection source)
         {
-            if (source == null)
-                throw new ArgumentNullException(nameof(source));
-
-            return source.Cast<Point2d>().Distinct(new Point2dComparer(tolerance));
-        }
-
-        /// <summary>
-        /// Removes duplicated points using Tolerance.Global.EqualPoint.
-        /// </summary>
-        /// <param name="source">The instance to which this method applies.</param>
-        /// <returns>A sequence of distinct points.</returns>
-        /// <exception cref="ArgumentNullException">ArgumentException is thrown if the collection is null.</exception>
-        public static IEnumerable<Point2d> RemoveDuplicates(this IEnumerable<Point2d> source)
-        {
+            Assert.IsNotNull(source, nameof(source));
             return source.RemoveDuplicates(Tolerance.Global);
         }
 
@@ -51,12 +28,35 @@ namespace Gile.AutoCAD.Geometry
         /// <param name="source">The instance to which this method applies.</param>
         /// <param name="tolerance">The Tolerance to be used in equality comparison.</param>
         /// <returns>A sequence of distinct points.</returns>
-        /// <exception cref="ArgumentNullException">ArgumentException is thrown if the collection is null.</exception>
+        /// <exception cref="ArgumentNullException">ArgumentException is thrown if <paramref name="source"/> is null.</exception>
+        public static IEnumerable<Point2d> RemoveDuplicates(this Point2dCollection source, Tolerance tolerance)
+        {
+            Assert.IsNotNull(source, nameof(source));
+            return source.Cast<Point2d>().Distinct(new Point2dComparer(tolerance));
+        }
+
+        /// <summary>
+        /// Removes duplicated points using Tolerance.Global.EqualPoint.
+        /// </summary>
+        /// <param name="source">The instance to which this method applies.</param>
+        /// <returns>A sequence of distinct points.</returns>
+        /// <exception cref="ArgumentNullException">ArgumentException is thrown if <paramref name="source"/> is null.</exception>
+        public static IEnumerable<Point2d> RemoveDuplicates(this IEnumerable<Point2d> source)
+        {
+            Assert.IsNotNull(source, nameof(source));
+            return source.RemoveDuplicates(Tolerance.Global);
+        }
+
+        /// <summary>
+        /// Removes duplicated points using the specified Tolerance.
+        /// </summary>
+        /// <param name="source">The instance to which this method applies.</param>
+        /// <param name="tolerance">The Tolerance to be used in equality comparison.</param>
+        /// <returns>A sequence of distinct points.</returns>
+        /// <exception cref="ArgumentNullException">ArgumentException is thrown if <paramref name="source"/> is null.</exception>
         public static IEnumerable<Point2d> RemoveDuplicates(this IEnumerable<Point2d> source, Tolerance tolerance)
         {
-            if (source == null)
-                throw new ArgumentNullException(nameof(source));
-
+            Assert.IsNotNull(source, nameof(source));
             return source.Distinct(new Point2dComparer(tolerance));
         }
 
@@ -66,9 +66,10 @@ namespace Gile.AutoCAD.Geometry
         /// <param name="source">The instance to which this method applies.</param>
         /// <param name="point">Point to search for.</param>
         /// <returns>true, if <c>point</c> is found; false, otherwise.</returns>
-        /// <exception cref="ArgumentNullException">ArgumentException is thrown if the collection is null.</exception>
+        /// <exception cref="ArgumentNullException">ArgumentException is thrown if <paramref name="source"/> is null.</exception>
         public static bool Contains(this Point2dCollection source, Point2d point)
         {
+            Assert.IsNotNull(source, nameof(source));
             return source.Contains(point, Tolerance.Global);
         }
 
@@ -79,12 +80,10 @@ namespace Gile.AutoCAD.Geometry
         /// <param name="point">Point to search for.</param>
         /// <param name="tol">The Tolerance to be used in equality comparison..</param>
         /// <returns>true, if <c>point</c> is found; false, otherwise.</returns>
-        /// <exception cref="ArgumentNullException">ArgumentException is thrown if the collection is null.</exception>
+        /// <exception cref="ArgumentNullException">ArgumentException is thrown if <paramref name="source"/> is null.</exception>
         public static bool Contains(this Point2dCollection source, Point2d point, Tolerance tol)
         {
-            if (source == null)
-                throw new ArgumentNullException(nameof(source));
-
+            Assert.IsNotNull(source, nameof(source));
             for (int i = 0; i < source.Count; i++)
             {
                 if (point.IsEqualTo(source[i], tol))
@@ -99,7 +98,7 @@ namespace Gile.AutoCAD.Geometry
         class Point2dComparer : IEqualityComparer<Point2d>
         {
             private Tolerance tolerance;
-            private double prec;
+            private readonly double prec;
 
             /// <summary>
             /// Creates a new instance ot Point2dComparer

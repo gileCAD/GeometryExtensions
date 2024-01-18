@@ -3,8 +3,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Gile.AutoCAD.Geometry
 {
@@ -18,8 +16,10 @@ namespace Gile.AutoCAD.Geometry
         /// </summary>
         /// <param name="source">Collection this method applies to.</param>
         /// <returns>Ordered array of Curve3d.</returns>
+        /// <exception cref="ArgumentNullException">ArgumentNullException is thrown if <paramref name="source"/> is null.</exception>
         public static Curve3d[] ToOrderedArray(this IEnumerable<Curve3d> source)
         {
+            Assert.IsNotNull(source, nameof(source));
             var list = source.ToList();
             int count = list.Count;
             var array = new Curve3d[count];

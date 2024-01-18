@@ -17,8 +17,10 @@ namespace Gile.AutoCAD.Geometry
         /// <param name="pline">The instance to which this method applies.</param>
         /// <param name="brkPt">the point where to cut the Polyline.</param>
         /// <returns>An array containig the two resulting polylines.</returns>
+        /// <exception cref="ArgumentNullException">ArgumentException is thrown if <paramref name="pline"/> is null.</exception>
         public static Polyline[] BreakAtPoint(this Polyline pline, Point3d brkPt)
         {
+            Assert.IsNotNull(pline, nameof(pline));
             brkPt = pline.GetClosestPointTo(brkPt, false);
 
             if (brkPt.IsEqualTo(pline.StartPoint))
@@ -79,41 +81,43 @@ namespace Gile.AutoCAD.Geometry
         /// <summary>
         /// Gets the Polyline centroid.
         /// </summary>
-        /// <param name="pl">The instance to which this method applies.</param>
+        /// <param name="pline">The instance to which this method applies.</param>
         /// <returns>The Polyline centroid (OCS coordinates).</returns>
-        public static Point2d Centroid2d(this Polyline pl)
+        /// <exception cref="ArgumentNullException">ArgumentException is thrown if <paramref name="pline"/> is null.</exception>
+        public static Point2d Centroid2d(this Polyline pline)
         {
+            Assert.IsNotNull(pline, nameof(pline));
             Point2d cen = new Point2d();
-            Triangle2d tri = new Triangle2d();
-            CircularArc2d arc = new CircularArc2d();
+            Triangle2d tri;
+            CircularArc2d arc;
             double tmpArea;
             double area = 0.0;
-            int last = pl.NumberOfVertices - 1;
-            Point2d p0 = pl.GetPoint2dAt(0);
+            int last = pline.NumberOfVertices - 1;
+            Point2d p0 = pline.GetPoint2dAt(0);
 
-            if (pl.GetSegmentType(0) == SegmentType.Arc)
+            if (pline.GetSegmentType(0) == SegmentType.Arc)
             {
-                arc = pl.GetArcSegment2dAt(0);
+                arc = pline.GetArcSegment2dAt(0);
                 area = arc.SignedArea();
                 cen = arc.Centroid() * area;
             }
             for (int i = 1; i < last; i++)
             {
-                tri = new Triangle2d(p0, pl.GetPoint2dAt(i), pl.GetPoint2dAt(i + 1));
+                tri = new Triangle2d(p0, pline.GetPoint2dAt(i), pline.GetPoint2dAt(i + 1));
                 tmpArea = tri.SignedArea;
                 cen += (tri.Centroid * tmpArea).GetAsVector();
                 area += tmpArea;
-                if (pl.GetSegmentType(i) == SegmentType.Arc)
+                if (pline.GetSegmentType(i) == SegmentType.Arc)
                 {
-                    arc = pl.GetArcSegment2dAt(i);
+                    arc = pline.GetArcSegment2dAt(i);
                     tmpArea = arc.SignedArea();
                     area += tmpArea;
                     cen += (arc.Centroid() * tmpArea).GetAsVector();
                 }
             }
-            if ((pl.GetSegmentType(0) == SegmentType.Arc) && (pl.Closed == true))
+            if ((pline.GetSegmentType(0) == SegmentType.Arc) && (pline.Closed == true))
             {
-                arc = pl.GetArcSegment2dAt(last);
+                arc = pline.GetArcSegment2dAt(last);
                 tmpArea = arc.SignedArea();
                 area += tmpArea;
                 cen += (arc.Centroid() * tmpArea).GetAsVector();
@@ -124,11 +128,12 @@ namespace Gile.AutoCAD.Geometry
         /// <summary>
         /// Gets the Polyline centroid.
         /// </summary>
-        /// <param name="pl">The instance to which this method applies.</param>
+        /// <param name="pline">The instance to which this method applies.</param>
         /// <returns>The Polyline centroid (WCS coordinates).</returns>
-        public static Point3d Centroid(this Polyline pl)
+        /// <exception cref="ArgumentNullException">ArgumentException is thrown if <paramref name="pline"/> is null.</exception>
+        public static Point3d Centroid(this Polyline pline)
         {
-            return pl.Centroid2d().Convert3d(pl.Normal, pl.Elevation);
+            return pline.Centroid2d().Convert3d(pline.Normal, pline.Elevation);
         }
 
         /// <summary>
@@ -136,8 +141,10 @@ namespace Gile.AutoCAD.Geometry
         /// </summary>
         /// <param name="pline">The instance to which this method applies.</param>
         /// <param name="radius">The arc radius.</param>
+        /// <exception cref="ArgumentNullException">ArgumentException is thrown if <paramref name="pline"/> is null.</exception>
         public static void FilletAll(this Polyline pline, double radius)
         {
+            Assert.IsNotNull(pline, nameof(pline));
             int n = pline.Closed ? 0 : 1;
             for (int i = n; i < pline.NumberOfVertices - n; i += 1 + pline.FilletAt(i, radius))
             { }
@@ -150,8 +157,10 @@ namespace Gile.AutoCAD.Geometry
         /// <param name="index">The vertex index.</param>
         /// <param name="radius">The arc radius.</param>
         /// <returns>1, if the operation succeded; 0, if it failed</returns>
+        /// <exception cref="ArgumentNullException">ArgumentException is thrown if <paramref name="pline"/> is null.</exception>
         public static int FilletAt(this Polyline pline, int index, double radius)
         {
+            Assert.IsNotNull(pline, nameof(pline));
             int prev = index == 0 && pline.Closed ? pline.NumberOfVertices - 1 : index - 1;
             if (pline.GetSegmentType(prev) != SegmentType.Line ||
                 pline.GetSegmentType(index) != SegmentType.Line)
@@ -187,8 +196,12 @@ namespace Gile.AutoCAD.Geometry
         /// <param name="plane">The projection plane.</param>
         /// <param name="direction">The projection direction (WCS coordinates).</param>
         /// <returns>The projected Polyline.</returns>
+        /// <exception cref="ArgumentNullException">ArgumentException is thrown if <paramref name="pline"/> is null.</exception>
+        /// <exception cref="ArgumentNullException">ArgumentException is thrown if <paramref name="plane"/> is null.</exception>
         public static Polyline GetProjectedPolyline(this Polyline pline, Plane plane, Vector3d direction)
         {
+            Assert.IsNotNull(pline, nameof(pline));
+            Assert.IsNotNull(plane, nameof(plane));
             Tolerance tol = new Tolerance(1e-9, 1e-9);
             if (plane.Normal.IsPerpendicularTo(direction, tol))
                 return null;
@@ -212,8 +225,14 @@ namespace Gile.AutoCAD.Geometry
         /// <param name="pline">The instance to which this method applies.</param>
         /// <param name="plane">The projection plane.</param>
         /// <returns>The projected Polyline.</returns>
-        public static Polyline GetOrthoProjectedPolyline(this Polyline pline, Plane plane) => 
-            pline.GetProjectedPolyline(plane, plane.Normal);
+        /// <exception cref="ArgumentNullException">ArgumentException is thrown if <paramref name="pline"/> is null.</exception>
+        /// <exception cref="ArgumentNullException">ArgumentException is thrown if <paramref name="plane"/> is null.</exception>
+        public static Polyline GetOrthoProjectedPolyline(this Polyline pline, Plane plane)
+        {
+            Assert.IsNotNull(pline, nameof(pline));
+            Assert.IsNotNull(plane, nameof(plane));
+            return pline.GetProjectedPolyline(plane, plane.Normal);
+        }
 
         /// <summary>
         /// Defines the way the point is contained. 
@@ -242,8 +261,10 @@ namespace Gile.AutoCAD.Geometry
         /// <param name="pline">The instance to which this method applies.</param>
         /// <param name="point">The point to evaluate.</param>
         /// <returns>A value of PointContainment.</returns>
+        /// <exception cref="ArgumentNullException">ArgumentException is thrown if <paramref name="pline"/> is null.</exception>
         public static PointContainment GetPointContainment(this Polyline pline, Point3d point)
         {
+            Assert.IsNotNull(pline, nameof(pline));
             return pline.GetPointContainment(point, Tolerance.Global.EqualPoint);
         }
 
@@ -254,8 +275,10 @@ namespace Gile.AutoCAD.Geometry
         /// <param name="point">The point to evaluate.</param>
         /// <param name="tolerance">The tolerance used for comparison.</param>
         /// <returns>A value of PointContainment.</returns>
+        /// <exception cref="ArgumentNullException">ArgumentException is thrown if <paramref name="pline"/> is null.</exception>
         public static PointContainment GetPointContainment(this Polyline pline, Point3d point, double tolerance)
         {
+            Assert.IsNotNull(pline, nameof(pline));
             if (pline == null)
                 throw new ArgumentNullException("pline");
 
@@ -296,11 +319,13 @@ namespace Gile.AutoCAD.Geometry
         /// <summary>
         /// Converts the Polyline into a Spline.
         /// </summary>
-        /// <param name="polyline">The instance to which this method applies.</param>
+        /// <param name="pline">The instance to which this method applies.</param>
         /// <returns>The newly created instance of Spline.</returns>
-        public static Spline ToSpline(this Polyline polyline)
+        /// <exception cref="ArgumentNullException">ArgumentException is thrown if <paramref name="pline"/> is null.</exception>
+        public static Spline ToSpline(this Polyline pline)
         {
-            using (Polyline2d poly2d = polyline.ConvertTo(false))
+            Assert.IsNotNull(pline, nameof(pline));
+            using (Polyline2d poly2d = pline.ConvertTo(false))
             {
                 return poly2d.Spline;
             }

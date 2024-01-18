@@ -17,8 +17,10 @@ namespace Gile.AutoCAD.Geometry
         /// </summary>
         /// <param name="region">The instance to which this method applies.</param>
         /// <returns>The centroid of the Region.</returns>
+        /// <exception cref="System.ArgumentNullException">ArgumentException is thrown if <paramref name="region"/> is null.</exception>
         public static Point3d Centroid(this Region region)
         {
+            Assert.IsNotNull(region, nameof(region));
             var plane = region.GetPlane();
             var coordinateSystem = plane.GetCoordinateSystem();
             var origin = coordinateSystem.Origin;
@@ -35,16 +37,21 @@ namespace Gile.AutoCAD.Geometry
         /// </summary>
         /// <param name="region">The instance to which this method applies.</param>
         /// <returns>The elevation of the Region.</returns>
-        public static double Elevation(this Region region) =>
-            region.GetPlane().PointOnPlane.TransformBy(Matrix3d.WorldToPlane(region.Normal)).Z;
+        /// <exception cref="System.ArgumentNullException">ArgumentException is thrown if <paramref name="region"/> is null.</exception>
+        public static double Elevation(this Region region)
+        {
+            return region.GetPlane().PointOnPlane.TransformBy(Matrix3d.WorldToPlane(region.Normal)).Z;
+        }
 
         /// <summary>
         /// Gets the curves constituting the boundaries of the region.
         /// </summary>
         /// <param name="region">The instance to which this method applies.</param>
         /// <returns>Curve collection.</returns>
+        /// <exception cref="System.ArgumentNullException">ArgumentException is thrown if <paramref name="region"/> is null.</exception>
         public static IEnumerable<Curve> GetCurves(this Region region)
         {
+            Assert.IsNotNull(region, nameof(region));
             using (var brep = new Brep(region))
             {
                 var loops = brep.Faces.SelectMany(face => face.Loops);
@@ -80,8 +87,10 @@ namespace Gile.AutoCAD.Geometry
         /// </summary>
         /// <param name="region">The instance to which this method applies.</param>
         /// <returns>A collection of tuples containing the loop data.</returns>
+        /// <exception cref="System.ArgumentNullException">ArgumentException is thrown if <paramref name="region"/> is null.</exception>
         public static IEnumerable<(HatchLoopTypes, Curve2dCollection, IntegerCollection)> GetHatchLoops(this Region region)
         {
+            Assert.IsNotNull(region, nameof(region));
             var plane = new Plane(Point3d.Origin, region.Normal);
 
             using (var brep = new Brep(region))
@@ -159,8 +168,10 @@ namespace Gile.AutoCAD.Geometry
         /// <param name="region">The instance to which this method applies.</param>
         /// <param name="point">The point to be evaluated.</param>
         /// <returns>The PointContainment value.</returns>
+        /// <exception cref="System.ArgumentNullException">ArgumentException is thrown if <paramref name="region"/> is null.</exception>
         public static PointContainment GetPointContainment(this Region region, Point3d point)
         {
+            Assert.IsNotNull(region, nameof(region));
             using (Brep brep = new Brep(region))
             using (BrepEntity entity = brep.GetPointContainment(point, out PointContainment result))
             {
