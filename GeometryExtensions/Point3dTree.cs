@@ -18,6 +18,7 @@ namespace Gile.AutoCAD.Geometry
         /// <param name="points">The Point3d collection to fill the tree.</param>
         /// <param name="ignoreZ">A value indicating if the Z coordinate of points is ignored 
         /// (as if all points were projected to the XY plane).</param>
+        /// <exception cref="System.ArgumentNullException">ArgumentException is thrown if <paramref name="points"/> is null.</exception>
         public Point3dTree(IEnumerable<Point3d> points, bool ignoreZ = false)
             : base(points, (pt) => pt, ignoreZ ? 2 : 3)
         { }

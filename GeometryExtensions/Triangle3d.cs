@@ -1,13 +1,14 @@
 ﻿using System;
 using Autodesk.AutoCAD.Geometry;
 using System.Globalization;
+using Microsoft.SqlServer.Server;
 
 namespace Gile.AutoCAD.Geometry
 {
     /// <summary>
     /// Describes a triangle within the 3D space. It can be seen as a structure of three Point3d.
     /// </summary>
-    public struct Triangle3d : IFormattable
+    public readonly struct Triangle3d : IFormattable
     {
         #region Fields
 
@@ -25,8 +26,11 @@ namespace Gile.AutoCAD.Geometry
         /// Creates a new instance of Triangle3d.
         /// </summary>
         /// <param name="points">Array of three Point3d.</param>
+        /// <exception cref="ArgumentNullException">ArgumentException is thrown if <paramref name="points"/> is null.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">ArgumentOutOfRangeException is thrown if <paramref name="points"/> length is different from 3.</exception>
         public Triangle3d(Point3d[] points)
         {
+            Assert.IsNotNull(points, nameof(points));
             if (points.Length != 3)
                 throw new ArgumentOutOfRangeException("Needs 3 points.");
 
@@ -324,7 +328,7 @@ namespace Gile.AutoCAD.Geometry
         /// <param name="obj">Object to be compared.</param>
         /// <returns>true, if vertices are equal; false, otherwise.</returns>
         public override bool Equals(object obj) =>
-            obj is Triangle3d && ((Triangle3d)obj).IsEqualTo(this);
+            obj is Triangle3d tri && tri.IsEqualTo(this);
 
         /// <summary>
         /// Serves as the Triangle3d hash function.
@@ -347,7 +351,9 @@ namespace Gile.AutoCAD.Geometry
         /// <param name="format">String format to be used for the points.</param>
         /// <returns>A string containing the 3 points in the specified format, separated by commas.</returns>
         public string ToString(string format) =>
-            $"({point0:format},{point1:format},{point2:format})";
+            string.IsNullOrEmpty(format) ?
+                $"({point0},{point1},{point2})" :
+                $"({point0:format},{point1:format},{point2:format})";
 
         /// <summary>
         /// Returns a string representing the current instance of Triangle3d.

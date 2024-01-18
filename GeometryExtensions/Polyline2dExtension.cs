@@ -16,18 +16,19 @@ namespace Gile.AutoCAD.Geometry
         /// <summary>
         /// Gets the list of verices.
         /// </summary>
-        /// <param name="pl">The instance to which this method applies.</param>
+        /// <param name="pline">The instance to which this method applies.</param>
         /// <returns>The list of vertices.</returns>
+        /// <exception cref="ArgumentNullException">ArgumentException is thrown if <paramref name="pline"/> is null.</exception>
         /// <exception cref="Autodesk.AutoCAD.Runtime.Exception">
         /// eNoActiveTransactions is thrown if the lethod is called outside of a Transaction.</exception>
-        public static List<Vertex2d> GetVertices(this Polyline2d pl)
+        public static List<Vertex2d> GetVertices(this Polyline2d pline)
         {
-            Transaction tr = pl.Database.TransactionManager.TopTransaction;
-            if (tr == null)
+            Assert.IsNotNull(pline, nameof(pline));
+            Transaction tr = 
+                pline.Database.TransactionManager.TopTransaction ?? 
                 throw new AcRx.Exception(AcRx.ErrorStatus.NoActiveTransactions);
-
             List<Vertex2d> vertices = new List<Vertex2d>();
-            foreach (ObjectId id in pl)
+            foreach (ObjectId id in pline)
             {
                 Vertex2d vx = (Vertex2d)tr.GetObject(id, OpenMode.ForRead);
                 if (vx.VertexType != Vertex2dType.SplineControlVertex)
@@ -39,64 +40,70 @@ namespace Gile.AutoCAD.Geometry
         /// <summary>
         /// Gets the linear 3D segment at specified index.
         /// </summary>
-        /// <param name="pl">The instance to which this method applies.</param>
+        /// <param name="pline">The instance to which this method applies.</param>
         /// <param name="index">The segment index.</param>
         /// <returns>An instance of LineSegment3d (WCS coordinates).</returns>
+        /// <exception cref="ArgumentNullException">ArgumentException is thrown if <paramref name="pline"/> is null.</exception>
         /// <exception cref="ArgumentOutOfRangeException">
-        /// ArgumentOutOfRangeException if the index id out of the indices range.</exception>
-        public static LineSegment3d GetLineSegmentAt(this Polyline2d pl, int index)
+        /// ArgumentOutOfRangeException if <paramref name="index"/> is out of the indices range.</exception>
+        public static LineSegment3d GetLineSegmentAt(this Polyline2d pline, int index)
         {
+            Assert.IsNotNull(pline, nameof(pline));
             try
             {
                 return new LineSegment3d(
-                    pl.GetPointAtParameter(index),
-                    pl.GetPointAtParameter(index + 1));
+                    pline.GetPointAtParameter(index),
+                    pline.GetPointAtParameter(index + 1));
             }
             catch
             {
-                throw new ArgumentOutOfRangeException("Out of range index");
+                throw new ArgumentOutOfRangeException(nameof(pline), "Out of range index");
             }
         }
 
         /// <summary>
         /// Gets the linear 2D segment at specified index.
         /// </summary>
-        /// <param name="pl">The instance to which this method applies.</param>
+        /// <param name="pline">The instance to which this method applies.</param>
         /// <param name="index">The segment index.</param>
         /// <returns>An instance of LineSegment2d (OCS coordinates).</returns>
+        /// <exception cref="ArgumentNullException">ArgumentException is thrown if <paramref name="pline"/> is null.</exception>
         /// <exception cref="ArgumentOutOfRangeException">
         /// ArgumentOutOfRangeException if the index id out of the indices range.</exception>
-        public static LineSegment2d GetLineSegment2dAt(this Polyline2d pl, int index)
+        public static LineSegment2d GetLineSegment2dAt(this Polyline2d pline, int index)
         {
+            Assert.IsNotNull(pline, nameof(pline));
             try
             {
-                Matrix3d WCS2ECS = pl.Ecs.Inverse();
+                Matrix3d WCS2ECS = pline.Ecs.Inverse();
                 return new LineSegment2d(
-                    pl.GetPointAtParameter(index).TransformBy(WCS2ECS).Convert2d(),
-                    pl.GetPointAtParameter(index + 1.0).TransformBy(WCS2ECS).Convert2d());
+                    pline.GetPointAtParameter(index).TransformBy(WCS2ECS).Convert2d(),
+                    pline.GetPointAtParameter(index + 1.0).TransformBy(WCS2ECS).Convert2d());
             }
             catch
             {
-                throw new ArgumentOutOfRangeException("Out of range index");
+                throw new ArgumentOutOfRangeException(nameof(pline), "Out of range index");
             }
         }
 
         /// <summary>
         /// Gets the circular arc 3D segment at specified index.
         /// </summary>
-        /// <param name="pl">The instance to which this method applies.</param>
+        /// <param name="pline">The instance to which this method applies.</param>
         /// <param name="index">The segment index.</param>
         /// <returns>An instance of CircularArc3d (WCS coordinates).</returns>
+        /// <exception cref="ArgumentNullException">ArgumentException is thrown if <paramref name="pline"/> is null.</exception>
         /// <exception cref="ArgumentOutOfRangeException">
         /// ArgumentOutOfRangeException if the index id out of the indices range.</exception>
-        public static CircularArc3d GetArcSegmentAt(this Polyline2d pl, int index)
+        public static CircularArc3d GetArcSegmentAt(this Polyline2d pline, int index)
         {
+            Assert.IsNotNull(pline, nameof(pline));
             try
             {
                 return new CircularArc3d(
-                    pl.GetPointAtParameter(index),
-                    pl.GetPointAtParameter(index + 0.5),
-                    pl.GetPointAtParameter(index + 1));
+                    pline.GetPointAtParameter(index),
+                    pline.GetPointAtParameter(index + 0.5),
+                    pline.GetPointAtParameter(index + 1));
             }
             catch
             {
@@ -107,20 +114,22 @@ namespace Gile.AutoCAD.Geometry
         /// <summary>
         /// Gets the circular arc 2D segment at specified index.
         /// </summary>
-        /// <param name="pl">The instance to which this method applies.</param>
+        /// <param name="pline">The instance to which this method applies.</param>
         /// <param name="index">The segment index.</param>
         /// <returns>An instance of CircularArc2d (OCS coordinates).</returns>
+        /// <exception cref="ArgumentNullException">ArgumentException is thrown if <paramref name="pline"/> is null.</exception>
         /// <exception cref="ArgumentOutOfRangeException">
         /// ArgumentOutOfRangeException if the index id out of the indices range.</exception>
-        public static CircularArc2d GetArcSegment2dAt(this Polyline2d pl, int index)
+        public static CircularArc2d GetArcSegment2dAt(this Polyline2d pline, int index)
         {
+            Assert.IsNotNull(pline, nameof(pline));
             try
             {
-                Matrix3d WCS2ECS = pl.Ecs.Inverse();
+                Matrix3d WCS2ECS = pline.Ecs.Inverse();
                 return new CircularArc2d(
-                    pl.GetPointAtParameter(index).TransformBy(WCS2ECS).Convert2d(),
-                    pl.GetPointAtParameter(index + 0.5).TransformBy(WCS2ECS).Convert2d(),
-                    pl.GetPointAtParameter(index + 1.0).TransformBy(WCS2ECS).Convert2d());
+                    pline.GetPointAtParameter(index).TransformBy(WCS2ECS).Convert2d(),
+                    pline.GetPointAtParameter(index + 0.5).TransformBy(WCS2ECS).Convert2d(),
+                    pline.GetPointAtParameter(index + 1.0).TransformBy(WCS2ECS).Convert2d());
             }
             catch
             {
@@ -131,25 +140,26 @@ namespace Gile.AutoCAD.Geometry
         /// <summary>
         /// Gets the centroid.
         /// </summary>
-        /// <param name="pl">The instance to which this method applies.</param>
+        /// <param name="pline">The instance to which this method applies.</param>
         /// <returns>The centroid (WCS coordinates).</returns>
-        public static Point3d Centroid(this Polyline2d pl)
+        /// <exception cref="ArgumentNullException">ArgumentException is thrown if <paramref name="pline"/> is null.</exception>
+        public static Point3d Centroid(this Polyline2d pline)
         {
-            Vertex2d[] vertices = pl.GetVertices().ToArray();
+            Assert.IsNotNull(pline, nameof(pline));
+            Vertex2d[] vertices = pline.GetVertices().ToArray();
             int last = vertices.Length - 1;
             Vertex2d vertex = vertices[0];
             Point2d p0 = vertex.Position.Convert2d();
-            double elev = pl.Elevation;
             Point2d cen = new Point2d(0.0, 0.0);
             double area = 0.0;
             double bulge = vertex.Bulge;
             double tmpArea;
             Point2d tmpPt;
-            Triangle2d tri = new Triangle2d();
-            CircularArc2d arc = new CircularArc2d();
+            Triangle2d tri;
+            CircularArc2d arc;
             if (bulge != 0.0)
             {
-                arc = pl.GetArcSegment2dAt(0);
+                arc = pline.GetArcSegment2dAt(0);
                 tmpArea = arc.SignedArea();
                 tmpPt = arc.Centroid();
                 area += tmpArea;
@@ -166,7 +176,7 @@ namespace Gile.AutoCAD.Geometry
                 bulge = vertices[i].Bulge;
                 if (bulge != 0.0)
                 {
-                    arc = pl.GetArcSegment2dAt(i);
+                    arc = pline.GetArcSegment2dAt(i);
                     tmpArea = arc.SignedArea();
                     tmpPt = arc.Centroid();
                     area += tmpArea;
@@ -174,16 +184,16 @@ namespace Gile.AutoCAD.Geometry
                 }
             }
             bulge = vertices[last].Bulge;
-            if ((bulge != 0.0) && (pl.Closed == true))
+            if ((bulge != 0.0) && (pline.Closed == true))
             {
-                arc = pl.GetArcSegment2dAt(last);
+                arc = pline.GetArcSegment2dAt(last);
                 tmpArea = arc.SignedArea();
                 tmpPt = arc.Centroid();
                 area += tmpArea;
                 cen += (new Point2d(tmpPt.X, tmpPt.Y) * tmpArea).GetAsVector();
             }
             cen = cen.DivideBy(area);
-            return new Point3d(cen.X, cen.Y, pl.Elevation).TransformBy(Matrix3d.PlaneToWorld(pl.Normal));
+            return new Point3d(cen.X, cen.Y, pline.Elevation).TransformBy(Matrix3d.PlaneToWorld(pline.Normal));
         }
 
         /// <summary>
@@ -193,8 +203,12 @@ namespace Gile.AutoCAD.Geometry
         /// <param name="plane">The projection plane.</param>
         /// <param name="direction">The projection direction (WCS coordinates).</param>
         /// <returns>The projected Polyline.</returns>
+        /// <exception cref="ArgumentNullException">ArgumentException is thrown if <paramref name="pline"/> is null.</exception>
+        /// <exception cref="ArgumentNullException">ArgumentException is thrown if <paramref name="plane"/> is null.</exception>
         public static Polyline GetProjectedPolyline(this Polyline2d pline, Plane plane, Vector3d direction)
         {
+            Assert.IsNotNull(pline, nameof(pline));
+            Assert.IsNotNull(pline, nameof(plane));
             Tolerance tol = new Tolerance(1e-9, 1e-9);
             if (plane.Normal.IsPerpendicularTo(direction, tol))
                 return null;
@@ -218,6 +232,8 @@ namespace Gile.AutoCAD.Geometry
         /// <param name="pline">The instance to which this method applies.</param>
         /// <param name="plane">The projection plane.</param>
         /// <returns>The projected Polyline.</returns>
+        /// <exception cref="ArgumentNullException">ArgumentException is thrown if <paramref name="pline"/> is null.</exception>
+        /// <exception cref="ArgumentNullException">ArgumentException is thrown if <paramref name="plane"/> is null.</exception>
         public static Polyline GetOrthoProjectedPolyline(this Polyline2d pline, Plane plane) =>
             pline.GetProjectedPolyline(plane, plane.Normal);
     }

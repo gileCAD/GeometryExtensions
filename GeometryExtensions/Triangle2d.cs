@@ -8,7 +8,7 @@ namespace Gile.AutoCAD.Geometry
     /// <summary>
     /// Describes a triangle within a plane. It can be seen as a structure of three Point2d.
     /// </summary>
-    public struct Triangle2d
+    public readonly struct Triangle2d
     {
         #region Fields
 
@@ -25,10 +25,13 @@ namespace Gile.AutoCAD.Geometry
         /// Creates a new instance of Triangle2d.
         /// </summary>
         /// <param name="points">Array of three Point2d.</param>
+        /// <exception cref="ArgumentNullException">ArgumentException is thrown if <paramref name="points"/> is null.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">ArgumentOutOfRangeException is thrown if <paramref name="points"/> length is different from 3.</exception>
         public Triangle2d(Point2d[] points)
         {
+            Assert.IsNotNull(points, nameof(points));
             if (points.Length != 3)
-                throw new ArgumentOutOfRangeException("Needs 3 points.");
+                throw new ArgumentOutOfRangeException(nameof(points), "Needs 3 points.");
 
             this.points = points;
             point0 = points[0];
@@ -141,8 +144,12 @@ namespace Gile.AutoCAD.Geometry
         /// </summary>
         /// <param name="plane">Plane of the Triangle3d.</param>
         /// <returns>The new instance of Triangle3d.</returns>
-        public Triangle3d Convert3d(Plane plane) =>
-            new Triangle3d(Array.ConvertAll(points, x => x.Convert3d(plane)));
+        /// <exception cref="System.ArgumentNullException">ArgumentException is thrown if <paramref name="plane"/> is null.</exception>
+        public Triangle3d Convert3d(Plane plane)
+        {
+            Assert.IsNotNull(plane, nameof(plane));
+            return new Triangle3d(Array.ConvertAll(points, x => x.Convert3d(plane)));
+        }
 
         /// <summary>
         /// Converts the current instance into a Triangle3d according to the plane defined by its Normal and its Elevation.
@@ -196,8 +203,10 @@ namespace Gile.AutoCAD.Geometry
         /// <param name="line2d">The line for which the intersections are searched.</param>
         /// <param name="tol">Tolerance to be used for comparisons.</param>
         /// <returns>The list of intersection points (an empty list if none was found).</returns>
+        /// <exception cref="System.ArgumentNullException">ArgumentException is thrown if <paramref name="line2d"/> is null.</exception>
         public List<Point2d> IntersectWith(LinearEntity2d line2d, Tolerance tol)
         {
+            Assert.IsNotNull(line2d, nameof(line2d));
             List<Point2d> result = new List<Point2d>();
             for (int i = 0; i < 3; i++)
             {
@@ -285,7 +294,7 @@ namespace Gile.AutoCAD.Geometry
         /// <param name="obj">Object to be compared.</param>
         /// <returns>true, if vertices are equal; false, otherwise.</returns>
         public override bool Equals(object obj) =>
-            obj is Triangle2d && ((Triangle2d)obj).IsEqualTo(this);
+            obj is Triangle2d tri && tri.IsEqualTo(this);
 
         /// <summary>
         /// Serves as the Triangle2d hash function.
@@ -309,7 +318,9 @@ namespace Gile.AutoCAD.Geometry
         /// <param name="format">String format to be used for the points.</param>
         /// <returns>A string containing the 3 points in the specified format, separated by commas.</returns>
         public string ToString(string format) =>
-            $"({point0:format},{point1:format},{point2:format})";
+            string.IsNullOrEmpty(format) ?
+                $"({point0},{point1},{point2})" :
+                $"({point0:format},{point1:format},{point2:format})";
 
         /// <summary>
         /// Returns a string representing the current instance of Triangle2d.

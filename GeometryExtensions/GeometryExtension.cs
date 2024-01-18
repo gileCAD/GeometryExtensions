@@ -60,8 +60,12 @@ namespace Gile.AutoCAD.Geometry
         /// <param name="plane">Projection plane..</param>
         /// <param name="direction">Projection direction.</param>
         /// <returns>The projected polyline.</returns>
+        /// <exception cref="ArgumentNullException">ArgumentNullException is thrown if <paramref name="pline"/> is null.</exception>
+        /// <exception cref="ArgumentNullException">ArgumentNullException is thrown if <paramref name="plane"/> is null.</exception>
         internal static Polyline ProjectPolyline(Curve pline, Plane plane, Vector3d direction)
         {
+            Assert.IsNotNull(pline, nameof(pline));
+            Assert.IsNotNull(plane, nameof(plane));
             if (!(pline is Polyline) && !(pline is Polyline2d) && !(pline is Polyline3d))
                 return null;
             plane = new Plane(Point3d.Origin.OrthoProject(plane), direction);
@@ -82,18 +86,17 @@ namespace Gile.AutoCAD.Geometry
                 PolylineSegmentCollection psc = new PolylineSegmentCollection();
                 for (int i = 0; i < newCol.Count; i++)
                 {
-                    if (newCol[i] is Ellipse)
+                    if (newCol[i] is Ellipse ellipse)
                     {
-                        psc.AddRange(new PolylineSegmentCollection((Ellipse)newCol[i]));
+                        psc.AddRange(new PolylineSegmentCollection(ellipse));
                         continue;
                     }
                     Curve crv = (Curve)newCol[i];
                     Point3d start = crv.StartPoint;
                     Point3d end = crv.EndPoint;
                     double bulge = 0.0;
-                    if (crv is Arc)
+                    if (crv is Arc arc)
                     {
-                        Arc arc = (Arc)crv;
                         double angle = arc.Center.GetVectorTo(start).GetAngleTo(arc.Center.GetVectorTo(end), arc.Normal);
                         bulge = Math.Tan(angle / 4.0);
                     }
@@ -122,8 +125,12 @@ namespace Gile.AutoCAD.Geometry
         /// <param name="direction">Projection direction.</param>
         /// <param name="dirPlane">Plane which origin is 0, 0, 0 and normal as the polyline.</param>
         /// <returns>The newly created Polyline.</returns>
+        /// <exception cref="ArgumentNullException">ArgumentNullException is thrown if <paramref name="plane"/> is null.</exception>
+        /// <exception cref="ArgumentNullException">ArgumentNullException is thrown if <paramref name="dirPlane"/> is null.</exception>
         internal static Polyline ProjectExtents(Extents3d extents, Plane plane, Vector3d direction, Plane dirPlane)
         {
+            Assert.IsNotNull(plane, nameof(plane));
+            Assert.IsNotNull(dirPlane, nameof(dirPlane));
             Point3d pt1 = extents.MinPoint.TransformBy(Matrix3d.PlaneToWorld(dirPlane));
             Point3d pt2 = extents.MaxPoint.TransformBy(Matrix3d.PlaneToWorld(dirPlane));
             Polyline projectedPline = new Polyline(2);

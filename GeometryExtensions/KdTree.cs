@@ -16,15 +16,14 @@ namespace Gile.AutoCAD.Geometry
     /// or if the objects have to be considered as projected on the XY plane.
     /// </summary>
     /// <typeparam name="T"> Type of the source items.</typeparam>
-
     public class KdTree<T>
     {
         #region Private fields
 
-        private int dimension;
-        private int parallelDepth;
-        private Func<Point3d, Point3d, double> sqrDist;
-        private Func<T, Point3d> getPosition;
+        private readonly int dimension;
+        private readonly int parallelDepth;
+        private readonly Func<Point3d, Point3d, double> sqrDist;
+        private readonly Func<T, Point3d> getPosition;
 
         #endregion
 
@@ -33,25 +32,19 @@ namespace Gile.AutoCAD.Geometry
         ///<summary>
         /// Creates a new instance of KdTree.
         /// </summary>
-        /// <param name="source">Collection to fill the tree.</param>
-        /// <param name="getPosition">Function which returns the location of the object.</param>
-        /// <param name="dimension">Dimension of the tree (2 or 3)</param>
-        /// <exception cref="ArgumentNullException">Thrown if source is null.</exception>
+
+        /// <param name="source">The collection of objects to fill the tree.</param>
+        /// <param name="getPosition">A function which returns the position of the object.</param>
+        /// <param name="dimension">The dimension of the tree (2 or 3)</param>
+        /// <exception cref="ArgumentNullException">Thrown if <paramref name="source"/> is null.</exception>
+        /// <exception cref="ArgumentNullException">Thrown if <paramref name="getPosition"/> is null.</exception>
         /// <exception cref="ArgumentOutOfRangeException">Thrown if dimension is lower than2 or greater than 3.</exception>
         public KdTree(IEnumerable<T> source, Func<T, Point3d> getPosition, int dimension)
         {
-            if (source == null)
-            {
-                throw new ArgumentNullException("points");
-            }
-            if (getPosition == null)
-            {
-                throw new ArgumentNullException("getPosition");
-            }
+            Assert.IsNotNull(source, nameof(source));
+            Assert.IsNotNull(getPosition, nameof(getPosition));
             if (dimension < 2 || 3 < dimension)
-            {
                 throw new ArgumentOutOfRangeException("dimension");
-            }
 
             this.getPosition = getPosition;
             this.dimension = dimension;
@@ -366,9 +359,7 @@ namespace Gile.AutoCAD.Geometry
                 {
                     if (-1 < compare(items[r], current))
                     {
-                        var tmp = items[w];
-                        items[w] = items[r];
-                        items[r] = tmp;
+                        (items[r], items[w]) = (items[w], items[r]);
                         w--;
                     }
                     else

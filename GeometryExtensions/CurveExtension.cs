@@ -15,8 +15,12 @@ namespace Gile.AutoCAD.Geometry
         /// <param name="point">Point to check against.</param>
         /// <param name="tolerance">Tolerance value.</param>
         /// <returns>true, if the condition is met; otherwise, false.</returns>
-        public static bool IsPointOnCurve(this Curve curve, Point3d point, Tolerance tolerance) =>
-            point.IsEqualTo(curve.GetClosestPointTo(point, false), tolerance);
+        /// <exception cref="System.ArgumentNullException">ArgumentNullException is thrown if <paramref name="curve"/> is null.</exception>
+        public static bool IsPointOnCurve(this Curve curve, Point3d point, Tolerance tolerance)
+        {
+            Assert.IsNotNull(curve, nameof(curve));
+            return point.IsEqualTo(curve.GetClosestPointTo(point, false), tolerance);
+        }
 
         /// <summary>
         /// Calls curve.IsPointOnCurve(Point3d point, Tolerance tolerance) with tolerance set to Global.
@@ -24,7 +28,11 @@ namespace Gile.AutoCAD.Geometry
         /// <param name="curve">The instance of Curve to which this method applies.</param>
         /// <param name="point">Point to check against.</param>
         /// <returns>true, if the condition is met; otherwise, false.</returns>
-        public static bool IsPointOnCurve(this Curve curve, Point3d point) =>
-            curve.IsPointOnCurve(point, Tolerance.Global);
+        /// <exception cref="System.ArgumentNullException">ArgumentNullException is thrown if <paramref name="curve"/> is null.</exception>
+        public static bool IsPointOnCurve(this Curve curve, Point3d point)
+        {
+            Assert.IsNotNull(curve, nameof(curve));
+            return curve.IsPointOnCurve(point, Tolerance.Global);
+        }
     }
 }

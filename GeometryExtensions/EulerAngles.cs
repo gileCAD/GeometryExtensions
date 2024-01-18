@@ -173,7 +173,7 @@ namespace Gile.AutoCAD.Geometry
         /// <param name="obj">Object to be compared.</param>
         /// <returns><c>true</c>, if the two objects are equal ; <c>false</c>, otherwise.</returns>
         public override bool Equals(object obj) =>
-            obj is EulerAngles && ((EulerAngles)obj).Transform.Equals(Transform);
+            obj is EulerAngles angles && angles.Transform.Equals(Transform);
 
         /// <summary>
         /// Serves as hashing function for the EulerAngles type.

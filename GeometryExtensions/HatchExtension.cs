@@ -17,8 +17,10 @@ namespace Gile.AutoCAD.Geometry
         /// </summary>
         /// <param name="hatch">The instance to which this method applies.</param>
         /// <returns>The list of the boundary curves.</returns>
+        /// <exception cref="System.ArgumentNullException">ArgumentNullException is thrown if <paramref name="hatch"/> is null.</exception>
         public static List<Curve> GetBoundary(this Hatch hatch)
         {
+            Assert.IsNotNull(hatch, nameof(hatch));
             var result = new List<Curve>();
             for (int i = 0; i < hatch.NumberOfLoops; i++)
             {

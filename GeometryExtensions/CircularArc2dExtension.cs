@@ -13,8 +13,10 @@ namespace Gile.AutoCAD.Geometry
         /// </summary>
         /// <param name="arc">The instance to which the method applies.</param>
         /// <returns>The signed area.</returns>
+        /// <exception cref="ArgumentNullException">ArgumentNullException is thrown if <paramref name="arc"/> is null.</exception>
         public static double SignedArea(this CircularArc2d arc)
         {
+            Assert.IsNotNull(arc, nameof(arc));
             double rad = arc.Radius;
             double ang = arc.IsClockWise ?
                 arc.StartAngle - arc.EndAngle :
@@ -27,8 +29,10 @@ namespace Gile.AutoCAD.Geometry
         /// </summary>
         /// <param name="arc">The instance to which the method applies.</param>
         /// <returns>The centroid of the arc.</returns>
+        /// <exception cref="ArgumentNullException">ArgumentNullException is thrown if <paramref name="arc"/> is null.</exception>
         public static Point2d Centroid(this CircularArc2d arc)
         {
+            Assert.IsNotNull(arc, nameof(arc));
             Point2d start = arc.StartPoint;
             Point2d end = arc.EndPoint;
             double area = arc.SignedArea();
@@ -47,8 +51,10 @@ namespace Gile.AutoCAD.Geometry
         /// <param name="arc">The instance to which the method applies.</param>
         /// <param name="pt">The Point2d to which tangents are searched.</param>
         /// <returns>An array of LineSegement2d representing the tangents (2) or <c>null</c> if there is none.</returns>
+        /// <exception cref="ArgumentNullException">ArgumentNullException is thrown if <paramref name="arc"/> is null.</exception>
         public static LineSegment2d[] GetTangentsTo(this CircularArc2d arc, Point2d pt)
         {
+            Assert.IsNotNull(arc, nameof(arc));
             // check if the point is inside the circle
             Point2d center = arc.Center;
             if (pt.GetDistanceTo(center) <= arc.Radius)
@@ -60,8 +66,7 @@ namespace Gile.AutoCAD.Geometry
             if (inters == null)
                 return null;
             LineSegment2d[] result = new LineSegment2d[2];
-            Vector2d v1 = inters[0] - center;
-            Vector2d v2 = inters[1] - center;
+            Vector2d v1 = center.GetVectorTo(inters[0]);
             int i = vec.X * v1.Y - vec.Y - v1.X > 0 ? 0 : 1;
             int j = i ^ 1;
             result[i] = new LineSegment2d(inters[0], pt);
@@ -81,8 +86,12 @@ namespace Gile.AutoCAD.Geometry
         /// <param name="other">The CircularArc2d to which searched for tangents.</param>
         /// <param name="flags">An enum value specifying which type of tangent is returned.</param>
         /// <returns>An array of LineSegment2d representing the tangents (maybe 2 or 4) or <c>null</c> if there is none.</returns>
+        /// <exception cref="ArgumentNullException">ArgumentNullException is thrown if <paramref name="arc"/> is null.</exception>
+        /// <exception cref="ArgumentNullException">ArgumentNullException is thrown if <paramref name="other"/> is null.</exception>
         public static LineSegment2d[] GetTangentsTo(this CircularArc2d arc, CircularArc2d other, TangentType flags)
         {
+            Assert.IsNotNull(arc, nameof(arc));
+            Assert.IsNotNull(other, nameof(other));
             // check if a circle is inside the other
             double dist = arc.Center.GetDistanceTo(other.Center);
             if (dist - Math.Abs(arc.Radius - other.Radius) <= Tolerance.Global.EqualPoint)
@@ -109,7 +118,6 @@ namespace Gile.AutoCAD.Geometry
                     if (inters == null)
                         return null;
                     vec1 = (inters[0] - arc.Center).GetNormal();
-                    vec2 = (inters[1] - arc.Center).GetNormal();
                     i = vec.X * vec1.Y - vec.Y - vec1.X > 0 ? 0 : 1;
                     j = i ^ 1;
                     result[i] = new LineSegment2d(inters[0], inters[0] + vec);

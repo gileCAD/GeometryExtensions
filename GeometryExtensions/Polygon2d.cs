@@ -16,8 +16,10 @@ namespace Gile.AutoCAD.Geometry
         /// Creates a new instance of Polygon2d.
         /// </summary>
         /// <param name="segments">Segments sequence.</param>
+        /// <exception cref="ArgumentNullException">ArgumentException is thrown if <paramref name="segments"/> is null.</exception>
         public Polygon2d(IEnumerable<LineSegment2d> segments)
         {
+            Assert.IsNotNull(segments, nameof(segments));
             Segments = segments.ToArray();
             Vertices = segments.Select(s => s.StartPoint).ToArray();
             NumberOfVertices = Vertices.Length;
@@ -28,8 +30,10 @@ namespace Gile.AutoCAD.Geometry
         /// Creates a new instance of Polygon2d.
         /// </summary>
         /// <param name="vertices">Vertices sequence.</param>
+        /// <exception cref="ArgumentNullException">ArgumentException is thrown if <paramref name="vertices"/> is null.</exception>
         public Polygon2d(IEnumerable<Point2d> vertices)
         {
+            Assert.IsNotNull(vertices, nameof(vertices));
             Vertices = vertices.ToArray();
             NumberOfVertices = Vertices.Length;
             Segments = new LineSegment2d[NumberOfVertices];
