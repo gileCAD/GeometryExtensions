@@ -353,7 +353,9 @@ namespace Gile.AutoCAD.Geometry
         public string ToString(string format) =>
             string.IsNullOrEmpty(format) ?
                 $"({point0},{point1},{point2})" :
-                $"({point0:format},{point1:format},{point2:format})";
+                $"({point0.ToString(format, CultureInfo.InvariantCulture)}," +
+                $"{point1.ToString(format, CultureInfo.InvariantCulture)}," +
+                $"{point2.ToString(format, CultureInfo.InvariantCulture)})";
 
         /// <summary>
         /// Returns a string representing the current instance of Triangle3d.
@@ -362,13 +364,9 @@ namespace Gile.AutoCAD.Geometry
         /// <param name="provider">Format provider to be used to format the points.</param>
         /// <returns>A string containing the 3 points in the specified format, separated by commas.</returns>
         public string ToString(string format, IFormatProvider provider) =>
-            "(" +
-            point0.ToString(format, provider) +
-            "," +
-            point1.ToString(format, provider) +
-            "," +
-            point2.ToString(format, provider) +
-            ")";
+            $"({point0.ToString(format, provider)}," +
+            $"{point1.ToString(format, provider)}," +
+            $"{point2.ToString(format, provider)})";
 
         #endregion
     }
