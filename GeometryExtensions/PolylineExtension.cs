@@ -306,6 +306,42 @@ namespace Gile.AutoCAD.Geometry
         }
 
         /// <summary>
+        /// Gets the spline exact approximation of the polyline.
+        /// </summary>
+        /// <param name="pline">The instance to which this method applies.</param>
+        /// <returns>A new Spline instance.</returns>
+        /// <exception cref="ArgumentNullException">ArgumentException is thrown if <paramref name="pline"/> is null.</exception>
+        /// <remarks>The Curve.Spline property throws eNotApplicable exception when called on a Polyline instance.</remarks>
+        public static Spline GetSpline(this Polyline pline)
+        {
+            Assert.IsNotNull(pline, nameof(pline));
+            Spline spline = null;
+            void CreateSpline(NurbCurve3d nurb)
+            {
+                if (spline is null)
+                    spline = (Spline)Curve.CreateFromGeCurve(nurb);
+                else
+                    using (var spl = (Spline)Curve.CreateFromGeCurve(nurb))
+                        spline.JoinEntity(spl);
+            }
+            for (int i = 0; i < pline.NumberOfVertices; i++)
+            {
+                switch (pline.GetSegmentType(i))
+                {
+                    case SegmentType.Line:
+                        CreateSpline(new NurbCurve3d(pline.GetLineSegmentAt(i)));
+                        break;
+                    case SegmentType.Arc:
+                        CreateSpline(new NurbCurve3d(pline.GetArcSegmentAt(i).GetEllipticalArc()));
+                        break;
+                    default:
+                        break;
+                }
+            }
+            return spline;
+        }
+
+        /// <summary>
         /// Applies a scale factor to a bulge value.
         /// </summary>
         /// <param name="bulge">The bulge value.</param>
@@ -314,21 +350,6 @@ namespace Gile.AutoCAD.Geometry
         public static double ScaleBulge(double bulge, double factor)
         {
             return Math.Tan(Math.Atan(bulge) * factor);
-        }
-
-        /// <summary>
-        /// Converts the Polyline into a Spline.
-        /// </summary>
-        /// <param name="pline">The instance to which this method applies.</param>
-        /// <returns>The newly created instance of Spline.</returns>
-        /// <exception cref="ArgumentNullException">ArgumentException is thrown if <paramref name="pline"/> is null.</exception>
-        public static Spline ToSpline(this Polyline pline)
-        {
-            Assert.IsNotNull(pline, nameof(pline));
-            using (Polyline2d poly2d = pline.ConvertTo(false))
-            {
-                return poly2d.Spline;
-            }
         }
 
         /// <summary>

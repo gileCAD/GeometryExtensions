@@ -9,6 +9,25 @@ namespace Gile.AutoCAD.Geometry
     public static class CircularArc3dExtension
     {
         /// <summary>
+        /// Gets the corresponding elliptical arc.
+        /// </summary>
+        /// <param name="arc">The instance to which the method applies.</param>
+        /// <returns>The corresponding elliptical arc.</returns>
+        /// <exception cref="ArgumentNullException">ArgumentNullException is thrown if <paramref name="arc"/> is null.</exception>
+        public static EllipticalArc3d GetEllipticalArc(this CircularArc3d arc)
+        {
+            Assert.IsNotNull(arc, nameof(arc));
+            return new EllipticalArc3d(
+                arc.Center,
+                arc.ReferenceVector,
+                (arc.Normal.CrossProduct(arc.ReferenceVector)).GetNormal(),
+                arc.Radius,
+                arc.Radius,
+                arc.StartAngle,
+                arc.EndAngle);
+        }
+
+        /// <summary>
         /// Gets the tangents between the active CircularArc3d instance complete circle and a point. 
         /// </summary>
         /// <remarks>
