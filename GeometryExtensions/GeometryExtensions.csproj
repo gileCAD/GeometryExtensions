@@ -37,19 +37,19 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="AcCoreMgd">
-      <HintPath>C:\ObjectARX 2017\inc\AcCoreMgd.dll</HintPath>
+      <HintPath>F:\ObjectARX 2024\inc\AcCoreMgd.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="AcDbMgd">
-      <HintPath>C:\ObjectARX 2017\inc\AcDbMgd.dll</HintPath>
+      <HintPath>F:\ObjectARX 2024\inc\AcDbMgd.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="acdbmgdbrep">
-      <HintPath>C:\ObjectARX 2017\inc\acdbmgdbrep.dll</HintPath>
+      <HintPath>F:\ObjectARX 2024\inc\acdbmgdbrep.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="AcMgd">
-      <HintPath>C:\ObjectARX 2017\inc\AcMgd.dll</HintPath>
+      <HintPath>F:\ObjectARX 2024\inc\AcMgd.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="AcMPolygonMGD">
