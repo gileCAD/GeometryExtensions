@@ -342,6 +342,26 @@ namespace Gile.AutoCAD.Geometry
         }
 
         /// <summary>
+        /// Negates the polyline normal vector keeping the geometry.
+        /// </summary>
+        /// <param name="pline">The instance to which this method applies.</param>
+        public static void NegateNormal(this Polyline pline)
+        {
+            var negatedNormal = pline.Normal.Negate();
+            var plane = new Plane(Point3d.Origin, negatedNormal);
+            for (int i = 0; i < pline.NumberOfVertices; i++)
+            {
+                var point = pline.GetPoint3dAt(i);
+                double bulge = pline.GetBulgeAt(i);
+                pline.SetPointAt(i, point.Convert2d(plane));
+                if (bulge != 0.0)
+                    pline.SetBulgeAt(i, -bulge);
+            }
+            pline.Normal = negatedNormal;
+            pline.Elevation = -pline.Elevation;
+        }
+
+        /// <summary>
         /// Applies a scale factor to a bulge value.
         /// </summary>
         /// <param name="bulge">The bulge value.</param>
