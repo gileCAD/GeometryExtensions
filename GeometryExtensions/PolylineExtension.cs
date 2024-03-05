@@ -345,8 +345,10 @@ namespace Gile.AutoCAD.Geometry
         /// Negates the polyline normal vector keeping the geometry.
         /// </summary>
         /// <param name="pline">The instance to which this method applies.</param>
+        /// <exception cref="ArgumentNullException">ArgumentException is thrown if <paramref name="pline"/> is null.</exception>
         public static void NegateNormal(this Polyline pline)
         {
+            Assert.IsNotNull(pline, nameof(pline));
             var negatedNormal = pline.Normal.Negate();
             var plane = new Plane(Point3d.Origin, negatedNormal);
             for (int i = 0; i < pline.NumberOfVertices; i++)
