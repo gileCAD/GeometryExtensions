@@ -68,7 +68,6 @@ namespace Gile.AutoCAD.Geometry
             Assert.IsNotNull(plane, nameof(plane));
             if (!(pline is Polyline) && !(pline is Polyline2d) && !(pline is Polyline3d))
                 return null;
-            plane = new Plane(Point3d.Origin.OrthoProject(plane), direction);
             using (DBObjectCollection oldCol = new DBObjectCollection())
             using (DBObjectCollection newCol = new DBObjectCollection())
             {
@@ -104,14 +103,15 @@ namespace Gile.AutoCAD.Geometry
                 }
                 foreach (DBObject o in newCol) o.Dispose();
                 Polyline projectedPline = psc.Join(new Tolerance(1e-9, 1e-9))[0].ToPolyline();
-                projectedPline.Normal = direction;
+                var normal = plane.Normal;
+                projectedPline.Normal = normal;
                 projectedPline.Elevation =
-                    plane.PointOnPlane.TransformBy(Matrix3d.WorldToPlane(new Plane(Point3d.Origin, direction))).Z;
+                    plane.PointOnPlane.TransformBy(Matrix3d.WorldToPlane(new Plane(Point3d.Origin, normal))).Z;
                 if (!pline.StartPoint.Project(plane, direction).IsEqualTo(projectedPline.StartPoint, new Tolerance(1e-9, 1e-9)))
                 {
-                    projectedPline.Normal = direction = direction.Negate();
+                    projectedPline.Normal = normal.Negate();
                     projectedPline.Elevation =
-                        plane.PointOnPlane.TransformBy(Matrix3d.WorldToPlane(new Plane(Point3d.Origin, direction))).Z;
+                        plane.PointOnPlane.TransformBy(Matrix3d.WorldToPlane(new Plane(Point3d.Origin, normal))).Z;
                 }
                 return projectedPline;
             }
