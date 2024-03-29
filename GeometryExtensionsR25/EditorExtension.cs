@@ -4,7 +4,7 @@ using Autodesk.AutoCAD.Geometry;
 
 using AcRx = Autodesk.AutoCAD.Runtime;
 
-namespace Gile.AutoCAD.Geometry
+namespace Gile.AutoCAD.R25.Geometry
 {
     /// <summary>
     /// Provides extension methods for the Editor type. 
@@ -19,7 +19,7 @@ namespace Gile.AutoCAD.Geometry
         /// <exception cref="System.ArgumentNullException">ArgumentNullException is thrown if <paramref name="ed"/> is null.</exception>
         public static Matrix3d UCS2WCS(this Editor ed)
         {
-            Assert.IsNotNull(ed, nameof(ed));
+            ArgumentNullException.ThrowIfNull(ed);
             return ed.CurrentUserCoordinateSystem;
         }
 
@@ -31,7 +31,7 @@ namespace Gile.AutoCAD.Geometry
         /// <exception cref="System.ArgumentNullException">ArgumentNullException is thrown if <paramref name="ed"/> is null.</exception>
         public static Matrix3d WCS2UCS(this Editor ed)
         {
-            Assert.IsNotNull(ed, nameof(ed));
+            ArgumentNullException.ThrowIfNull(ed);
             return ed.CurrentUserCoordinateSystem.Inverse();
         }
 
@@ -43,7 +43,7 @@ namespace Gile.AutoCAD.Geometry
         /// <exception cref="System.ArgumentNullException">ArgumentNullException is thrown if <paramref name="ed"/> is null.</exception>
         public static Matrix3d DCS2WCS(this Editor ed)
         {
-            Assert.IsNotNull(ed, nameof(ed));
+            ArgumentNullException.ThrowIfNull(ed);
             Matrix3d retVal = new();
             bool tilemode = ed.Document.Database.TileMode;
             if (!tilemode)
@@ -68,7 +68,7 @@ namespace Gile.AutoCAD.Geometry
         /// <exception cref="System.ArgumentNullException">ArgumentNullException is thrown if <paramref name="ed"/> is null.</exception>
         public static Matrix3d WCS2DCS(this Editor ed)
         {
-            Assert.IsNotNull(ed, nameof(ed));
+            ArgumentNullException.ThrowIfNull(ed);
             return ed.DCS2WCS().Inverse();
         }
 
@@ -84,7 +84,7 @@ namespace Gile.AutoCAD.Geometry
         /// eCannotChangeActiveViewport is thrown if there is none floating viewport in the current layout.</exception>
         public static Matrix3d DCS2PSDCS(this Editor ed)
         {
-            Assert.IsNotNull(ed, nameof(ed));
+            ArgumentNullException.ThrowIfNull(ed);
             Database db = ed.Document.Database;
             if (db.TileMode)
                 throw new AcRx.Exception(AcRx.ErrorStatus.NotInPaperspace);
@@ -121,7 +121,7 @@ namespace Gile.AutoCAD.Geometry
         /// eCannotChangeActiveViewport is thrown if there is none floating viewport in the current layout.</exception>
         public static Matrix3d PSDCS2DCS(this Editor ed)
         {
-            Assert.IsNotNull(ed, nameof(ed));
+            ArgumentNullException.ThrowIfNull(ed);
             return ed.DCS2PSDCS().Inverse();
         }
     }

@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 using static System.Math;
 
-namespace Gile.AutoCAD.Geometry
+namespace Gile.AutoCAD.R25.Geometry
 {
     /// <summary>
     /// Provides extension methods for the Hatch type.
@@ -20,7 +20,7 @@ namespace Gile.AutoCAD.Geometry
         /// <exception cref="System.ArgumentNullException">ArgumentNullException is thrown if <paramref name="hatch"/> is null.</exception>
         public static List<Curve> GetBoundary(this Hatch hatch)
         {
-            Assert.IsNotNull(hatch, nameof(hatch));
+            ArgumentNullException.ThrowIfNull(hatch);
             var result = new List<Curve>();
             for (int i = 0; i < hatch.NumberOfLoops; i++)
             {

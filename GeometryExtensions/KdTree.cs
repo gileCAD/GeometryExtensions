@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 using static System.Math;
 
-namespace Gile.AutoCAD.Geometry
+namespace Gile.AutoCAD.R19.Geometry
 {
     /// <summary>
     /// Provides methods to organize locatable objects in a Kd tree structure to speed up the search of neighbours.

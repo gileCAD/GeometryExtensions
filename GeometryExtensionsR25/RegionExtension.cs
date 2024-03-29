@@ -5,7 +5,7 @@ using Autodesk.AutoCAD.Geometry;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Gile.AutoCAD.Geometry
+namespace Gile.AutoCAD.R25.Geometry
 {
     /// <summary>
     /// Provides extension methods for the Region type.
@@ -20,7 +20,7 @@ namespace Gile.AutoCAD.Geometry
         /// <exception cref="System.ArgumentNullException">ArgumentException is thrown if <paramref name="region"/> is null.</exception>
         public static Point3d Centroid(this Region region)
         {
-            Assert.IsNotNull(region, nameof(region));
+            ArgumentNullException.ThrowIfNull(region);
             var plane = region.GetPlane();
             var coordinateSystem = plane.GetCoordinateSystem();
             var origin = coordinateSystem.Origin;
@@ -51,7 +51,7 @@ namespace Gile.AutoCAD.Geometry
         /// <exception cref="System.ArgumentNullException">ArgumentException is thrown if <paramref name="region"/> is null.</exception>
         public static IEnumerable<Curve> GetCurves(this Region region)
         {
-            Assert.IsNotNull(region, nameof(region));
+            ArgumentNullException.ThrowIfNull(region);
             using (var brep = new Brep(region))
             {
                 var loops = brep.Faces.SelectMany(face => face.Loops);
@@ -90,7 +90,7 @@ namespace Gile.AutoCAD.Geometry
         /// <exception cref="System.ArgumentNullException">ArgumentException is thrown if <paramref name="region"/> is null.</exception>
         public static IEnumerable<(HatchLoopTypes, Curve2dCollection, IntegerCollection)> GetHatchLoops(this Region region)
         {
-            Assert.IsNotNull(region, nameof(region));
+            ArgumentNullException.ThrowIfNull(region);
             var plane = new Plane(Point3d.Origin, region.Normal);
 
             using (var brep = new Brep(region))
@@ -171,7 +171,7 @@ namespace Gile.AutoCAD.Geometry
         /// <exception cref="System.ArgumentNullException">ArgumentException is thrown if <paramref name="region"/> is null.</exception>
         public static PointContainment GetPointContainment(this Region region, Point3d point)
         {
-            Assert.IsNotNull(region, nameof(region));
+            ArgumentNullException.ThrowIfNull(region);
             using (Brep brep = new(region))
             using (BrepEntity entity = brep.GetPointContainment(point, out PointContainment result))
             {

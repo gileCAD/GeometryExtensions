@@ -3,7 +3,7 @@ using Autodesk.AutoCAD.Geometry;
 using System.Globalization;
 using Microsoft.SqlServer.Server;
 
-namespace Gile.AutoCAD.Geometry
+namespace Gile.AutoCAD.R19.Geometry
 {
     /// <summary>
     /// Describes a triangle within the 3D space. It can be seen as a structure of three Point3d.

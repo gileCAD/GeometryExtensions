@@ -1,7 +1,7 @@
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
 
-namespace Gile.AutoCAD.Geometry
+namespace Gile.AutoCAD.R25.Geometry
 {
     /// <summary>
     /// Provides extension methods for the Curve type.
@@ -18,7 +18,7 @@ namespace Gile.AutoCAD.Geometry
         /// <exception cref="System.ArgumentNullException">ArgumentNullException is thrown if <paramref name="curve"/> is null.</exception>
         public static bool IsPointOnCurve(this Curve curve, Point3d point, Tolerance tolerance)
         {
-            Assert.IsNotNull(curve, nameof(curve));
+            ArgumentNullException.ThrowIfNull(curve);
             return point.IsEqualTo(curve.GetClosestPointTo(point, false), tolerance);
         }
 
@@ -31,7 +31,7 @@ namespace Gile.AutoCAD.Geometry
         /// <exception cref="System.ArgumentNullException">ArgumentNullException is thrown if <paramref name="curve"/> is null.</exception>
         public static bool IsPointOnCurve(this Curve curve, Point3d point)
         {
-            Assert.IsNotNull(curve, nameof(curve));
+            ArgumentNullException.ThrowIfNull(curve);
             return curve.IsPointOnCurve(point, Tolerance.Global);
         }
     }

@@ -1,6 +1,6 @@
 ﻿using Autodesk.AutoCAD.Geometry;
 
-namespace Gile.AutoCAD.Geometry
+namespace Gile.AutoCAD.R25.Geometry
 {
     /// <summary>
     /// Provides extension methods for the Vector2d type.
@@ -24,7 +24,7 @@ namespace Gile.AutoCAD.Geometry
         /// <exception cref="System.ArgumentNullException">ArgumentException is thrown if <paramref name="plane"/> is null.</exception>
         public static Vector3d Convert3d(this Vector2d vector, Plane plane)
         {
-            Assert.IsNotNull(plane, nameof(plane));
+            ArgumentNullException.ThrowIfNull(plane);
             return vector.Convert3d().TransformBy(Matrix3d.PlaneToWorld(plane));
         }
     }

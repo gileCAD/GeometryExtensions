@@ -1,7 +1,7 @@
 ﻿using System;
 using Autodesk.AutoCAD.Geometry;
 
-namespace Gile.AutoCAD.Geometry
+namespace Gile.AutoCAD.R25.Geometry
 {
     /// <summary>
     /// Provides extension methods for the CircularArc3d type.
@@ -16,7 +16,7 @@ namespace Gile.AutoCAD.Geometry
         /// <exception cref="ArgumentNullException">ArgumentNullException is thrown if <paramref name="arc"/> is null.</exception>
         public static EllipticalArc3d GetEllipticalArc(this CircularArc3d arc)
         {
-            Assert.IsNotNull(arc, nameof(arc));
+            ArgumentNullException.ThrowIfNull(arc);
             return new EllipticalArc3d(
                 arc.Center,
                 arc.ReferenceVector,
@@ -42,7 +42,7 @@ namespace Gile.AutoCAD.Geometry
         /// eNonCoplanarGeometry is thrown if the objects do not lies on the same plane.</exception>
         public static LineSegment3d[]? GetTangentsTo(this CircularArc3d arc, Point3d pt)
         {
-            Assert.IsNotNull(arc, nameof(arc));
+            ArgumentNullException.ThrowIfNull(arc);
             // check if arc and point lies on the plane
             Vector3d normal = arc.Normal;
             Matrix3d WCS2OCS = Matrix3d.WorldToPlane(normal);
@@ -85,8 +85,8 @@ namespace Gile.AutoCAD.Geometry
         /// eNonCoplanarGeometry is thrown if the objects do not lies on the same plane.</exception>
         public static LineSegment3d[]? GetTangentsTo(this CircularArc3d arc, CircularArc3d other, TangentType flags)
         {
-            Assert.IsNotNull(arc, nameof(arc));
-            Assert.IsNotNull(other, nameof(other));
+            ArgumentNullException.ThrowIfNull(arc);
+            ArgumentNullException.ThrowIfNull(other);
             // check if circles lies on the same plane
             Vector3d normal = arc.Normal;
             Matrix3d WCS2OCS = Matrix3d.WorldToPlane(normal);

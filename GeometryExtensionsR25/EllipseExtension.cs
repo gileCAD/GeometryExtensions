@@ -2,7 +2,7 @@
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
 
-namespace Gile.AutoCAD.Geometry
+namespace Gile.AutoCAD.R25.Geometry
 {
     /// <summary>
     /// Provides extension methods for the Ellipse type. 
@@ -17,7 +17,7 @@ namespace Gile.AutoCAD.Geometry
         /// <exception cref="ArgumentNullException">ArgumentNullException is thrown if <paramref name="ellipse"/> is null.</exception>
         public static Polyline ToPolyline(this Ellipse ellipse)
         {
-            Assert.IsNotNull(ellipse, nameof(ellipse));
+            ArgumentNullException.ThrowIfNull(ellipse);
             Polyline pline = new PolylineSegmentCollection(ellipse).ToPolyline();
             pline.Closed = ellipse.Closed;
             pline.Normal = ellipse.Normal;
@@ -34,7 +34,7 @@ namespace Gile.AutoCAD.Geometry
         /// <exception cref="ArgumentNullException">ArgumentNullException is thrown if <paramref name="ellipse"/> is null.</exception>
         public static double GetParamAtAngle(this Ellipse ellipse, double angle)
         {
-            Assert.IsNotNull(ellipse, nameof(ellipse));
+            ArgumentNullException.ThrowIfNull(ellipse);
             return Math.Atan2(ellipse.MajorRadius * Math.Sin(angle), ellipse.MinorRadius * Math.Cos(angle));
         }
 
@@ -47,7 +47,7 @@ namespace Gile.AutoCAD.Geometry
         /// <exception cref="ArgumentNullException">ArgumentNullException is thrown if <paramref name="ellipse"/> is null.</exception>
         public static double GetAngleAtParam(this Ellipse ellipse, double param)
         {
-            Assert.IsNotNull(ellipse, nameof(ellipse));
+            ArgumentNullException.ThrowIfNull(ellipse);
             return Math.Atan2(ellipse.MinorRadius * Math.Sin(param), ellipse.MajorRadius * Math.Cos(param));
         }
     }

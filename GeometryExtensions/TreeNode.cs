@@ -1,4 +1,4 @@
-﻿namespace Gile.AutoCAD.Geometry
+﻿namespace Gile.AutoCAD.R19.Geometry
 {
     /// <summary>
     /// Describes a generic tree node.

@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 using static System.Math;
 
-namespace Gile.AutoCAD.Geometry
+namespace Gile.AutoCAD.R19.Geometry
 {
     /// <summary>
     /// Provides extension methods for the Hatch type.
