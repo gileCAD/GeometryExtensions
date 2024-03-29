@@ -5,7 +5,7 @@ using System.Linq;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
 
-namespace Gile.AutoCAD.Geometry
+namespace Gile.AutoCAD.R19.Geometry
 {
     /// <summary>
     /// Describes a Polygon 2D.

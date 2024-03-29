@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 using AcRx = Autodesk.AutoCAD.Runtime;
 
-namespace Gile.AutoCAD.Geometry
+namespace Gile.AutoCAD.R19.Geometry
 {
     /// <summary>
     /// Provides extension methods for the Polyline2d type.

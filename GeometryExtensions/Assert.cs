@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 
-namespace Gile.AutoCAD.Geometry
+namespace Gile.AutoCAD.R19.Geometry
 {
     /// <summary>
     /// Provides methods to throw an exception if an assertion is wrong.
@@ -14,6 +14,7 @@ namespace Gile.AutoCAD.Geometry
         /// <param name="obj">The instance to which the assertion applies.</param>
         /// <param name="paramName">Name of the parameter.</param>
         /// <exception cref="System.ArgumentNullException">Throws ArgumentNullException if <paramref name="obj"/> is null.</exception>
+        /// <remarks>This method is not available for AutoCAD 2025+ (replaced by System.ArgumentNullException.ThrowIfNull).</remarks>
         public static void IsNotNull<T>(T obj, string paramName) where T : class
         {
             if (obj == null)

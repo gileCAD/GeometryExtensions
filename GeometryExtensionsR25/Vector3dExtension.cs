@@ -1,6 +1,6 @@
 ﻿using Autodesk.AutoCAD.Geometry;
 
-namespace Gile.AutoCAD.Geometry
+namespace Gile.AutoCAD.R25.Geometry
 {
     /// <summary>
     /// Provides extension methods for the Vector2d type.

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Autodesk.AutoCAD.Geometry;
 
-namespace Gile.AutoCAD.Geometry
+namespace Gile.AutoCAD.R19.Geometry
 {
     /// <summary>
     /// Provides extension methods for the Point2dCollection and IEnumerable&lt;Point2d&gt; types.

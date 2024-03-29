@@ -4,7 +4,7 @@ using System.Globalization;
 
 using Autodesk.AutoCAD.Geometry;
 
-namespace Gile.AutoCAD.Geometry
+namespace Gile.AutoCAD.R19.Geometry
 {
     /// <summary>
     /// Describes a triangle within a plane. It can be seen as a structure of three Point2d.

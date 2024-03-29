@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Gile.AutoCAD.Geometry
+namespace Gile.AutoCAD.R25.Geometry
 {
     /// <summary>
     /// Provides extension methods for the Curve3d type.
@@ -19,7 +19,7 @@ namespace Gile.AutoCAD.Geometry
         /// <exception cref="ArgumentNullException">ArgumentNullException is thrown if <paramref name="source"/> is null.</exception>
         public static Curve3d[] ToOrderedArray(this IEnumerable<Curve3d> source)
         {
-            Assert.IsNotNull(source, nameof(source));
+            ArgumentNullException.ThrowIfNull(source);
             var list = source.ToList();
             int count = list.Count;
             var array = new Curve3d[count];

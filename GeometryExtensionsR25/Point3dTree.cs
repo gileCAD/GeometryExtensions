@@ -2,7 +2,7 @@
 
 using System.Collections.Generic;
 
-namespace Gile.AutoCAD.Geometry
+namespace Gile.AutoCAD.R25.Geometry
 {
     /// <summary>
     /// Provides methods to organize 3d points in a Kd tree structure to speed up the search of neighbours.

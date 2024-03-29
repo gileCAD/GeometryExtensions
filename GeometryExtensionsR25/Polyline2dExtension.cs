@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 using AcRx = Autodesk.AutoCAD.Runtime;
 
-namespace Gile.AutoCAD.Geometry
+namespace Gile.AutoCAD.R25.Geometry
 {
     /// <summary>
     /// Provides extension methods for the Polyline2d type.
@@ -23,7 +23,7 @@ namespace Gile.AutoCAD.Geometry
         /// eNoActiveTransactions is thrown if the lethod is called outside of a Transaction.</exception>
         public static List<Vertex2d> GetVertices(this Polyline2d pline)
         {
-            Assert.IsNotNull(pline, nameof(pline));
+            ArgumentNullException.ThrowIfNull(pline);
             Transaction tr = 
                 pline.Database.TransactionManager.TopTransaction ?? 
                 throw new AcRx.Exception(AcRx.ErrorStatus.NoActiveTransactions);
@@ -48,7 +48,7 @@ namespace Gile.AutoCAD.Geometry
         /// ArgumentOutOfRangeException if <paramref name="index"/> is out of the indices range.</exception>
         public static LineSegment3d GetLineSegmentAt(this Polyline2d pline, int index)
         {
-            Assert.IsNotNull(pline, nameof(pline));
+            ArgumentNullException.ThrowIfNull(pline);
             try
             {
                 return new LineSegment3d(
@@ -72,7 +72,7 @@ namespace Gile.AutoCAD.Geometry
         /// ArgumentOutOfRangeException if the index id out of the indices range.</exception>
         public static LineSegment2d GetLineSegment2dAt(this Polyline2d pline, int index)
         {
-            Assert.IsNotNull(pline, nameof(pline));
+            ArgumentNullException.ThrowIfNull(pline);
             try
             {
                 Matrix3d WCS2ECS = pline.Ecs.Inverse();
@@ -97,7 +97,7 @@ namespace Gile.AutoCAD.Geometry
         /// ArgumentOutOfRangeException if the index id out of the indices range.</exception>
         public static CircularArc3d GetArcSegmentAt(this Polyline2d pline, int index)
         {
-            Assert.IsNotNull(pline, nameof(pline));
+            ArgumentNullException.ThrowIfNull(pline);
             try
             {
                 return new CircularArc3d(
@@ -122,7 +122,7 @@ namespace Gile.AutoCAD.Geometry
         /// ArgumentOutOfRangeException if the index id out of the indices range.</exception>
         public static CircularArc2d GetArcSegment2dAt(this Polyline2d pline, int index)
         {
-            Assert.IsNotNull(pline, nameof(pline));
+            ArgumentNullException.ThrowIfNull(pline);
             try
             {
                 Matrix3d WCS2ECS = pline.Ecs.Inverse();
@@ -145,7 +145,7 @@ namespace Gile.AutoCAD.Geometry
         /// <exception cref="ArgumentNullException">ArgumentException is thrown if <paramref name="pline"/> is null.</exception>
         public static Point3d Centroid(this Polyline2d pline)
         {
-            Assert.IsNotNull(pline, nameof(pline));
+            ArgumentNullException.ThrowIfNull(pline);
             Vertex2d[] vertices = [.. pline.GetVertices()];
             int last = vertices.Length - 1;
             Vertex2d vertex = vertices[0];
@@ -207,8 +207,8 @@ namespace Gile.AutoCAD.Geometry
         /// <exception cref="ArgumentNullException">ArgumentException is thrown if <paramref name="plane"/> is null.</exception>
         public static Polyline? GetProjectedPolyline(this Polyline2d pline, Plane plane, Vector3d direction)
         {
-            Assert.IsNotNull(pline, nameof(pline));
-            Assert.IsNotNull(pline, nameof(plane));
+            ArgumentNullException.ThrowIfNull(pline);
+            ArgumentNullException.ThrowIfNull(pline);
             Tolerance tol = new(1e-9, 1e-9);
             if (plane.Normal.IsPerpendicularTo(direction, tol))
                 return null;

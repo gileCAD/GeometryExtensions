@@ -2,7 +2,7 @@
 
 using System;
 
-namespace Gile.AutoCAD.Geometry
+namespace Gile.AutoCAD.R19.Geometry
 {
     /// <summary>
     /// Descibes a Polyline segment

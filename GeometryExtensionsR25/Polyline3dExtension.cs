@@ -1,7 +1,7 @@
 ﻿using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
 
-namespace Gile.AutoCAD.Geometry
+namespace Gile.AutoCAD.R25.Geometry
 {
     /// <summary>
     /// Provides extension methods for the Polyline3d type.
@@ -19,8 +19,8 @@ namespace Gile.AutoCAD.Geometry
         /// <exception cref="System.ArgumentNullException">ArgumentException is thrown if <paramref name="plane"/> is null.</exception>
         public static Polyline? GetProjectedPolyline(this Polyline3d pline3d, Plane plane, Vector3d direction)
         {
-            Assert.IsNotNull(pline3d, nameof(pline3d));
-            Assert.IsNotNull(plane, nameof(plane));
+            System.ArgumentNullException.ThrowIfNull(pline3d);
+            System.ArgumentNullException.ThrowIfNull(plane);
             if (plane.Normal.IsPerpendicularTo(direction, new Tolerance(1e-9, 1e-9)))
                 return null;
 
@@ -56,8 +56,8 @@ namespace Gile.AutoCAD.Geometry
         /// <exception cref="System.ArgumentNullException">ArgumentException is thrown if <paramref name="plane"/> is null.</exception>
         public static Polyline GetOrthoProjectedPolyline(this Polyline3d pline3d, Plane plane)
         {
-            Assert.IsNotNull(pline3d, nameof(pline3d));
-            Assert.IsNotNull(pline3d, nameof(plane));
+            System.ArgumentNullException.ThrowIfNull(pline3d);
+            System.ArgumentNullException.ThrowIfNull(pline3d);
             var pline = new Polyline();
             int i = 0;
             using (var tr = new OpenCloseTransaction())

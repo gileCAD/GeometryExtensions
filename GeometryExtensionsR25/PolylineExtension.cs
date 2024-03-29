@@ -4,7 +4,7 @@ using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
 using Autodesk.AutoCAD.Runtime;
 
-namespace Gile.AutoCAD.Geometry
+namespace Gile.AutoCAD.R25.Geometry
 {
     /// <summary>
     /// Provides extension methods for the Polyline type.
@@ -20,7 +20,7 @@ namespace Gile.AutoCAD.Geometry
         /// <exception cref="ArgumentNullException">ArgumentException is thrown if <paramref name="pline"/> is null.</exception>
         public static Polyline?[] BreakAtPoint(this Polyline pline, Point3d brkPt)
         {
-            Assert.IsNotNull(pline, nameof(pline));
+            ArgumentNullException.ThrowIfNull(pline);
             brkPt = pline.GetClosestPointTo(brkPt, false);
 
             if (brkPt.IsEqualTo(pline.StartPoint))
@@ -86,7 +86,7 @@ namespace Gile.AutoCAD.Geometry
         /// <exception cref="ArgumentNullException">ArgumentException is thrown if <paramref name="pline"/> is null.</exception>
         public static Point2d Centroid2d(this Polyline pline)
         {
-            Assert.IsNotNull(pline, nameof(pline));
+            ArgumentNullException.ThrowIfNull(pline);
             Point2d cen = new();
             Triangle2d tri;
             CircularArc2d arc;
@@ -144,7 +144,7 @@ namespace Gile.AutoCAD.Geometry
         /// <exception cref="ArgumentNullException">ArgumentException is thrown if <paramref name="pline"/> is null.</exception>
         public static void FilletAll(this Polyline pline, double radius)
         {
-            Assert.IsNotNull(pline, nameof(pline));
+            ArgumentNullException.ThrowIfNull(pline);
             int n = pline.Closed ? 0 : 1;
             for (int i = n; i < pline.NumberOfVertices - n; i += 1 + pline.FilletAt(i, radius))
             { }
@@ -160,7 +160,7 @@ namespace Gile.AutoCAD.Geometry
         /// <exception cref="ArgumentNullException">ArgumentException is thrown if <paramref name="pline"/> is null.</exception>
         public static int FilletAt(this Polyline pline, int index, double radius)
         {
-            Assert.IsNotNull(pline, nameof(pline));
+            ArgumentNullException.ThrowIfNull(pline);
             int prev = index == 0 && pline.Closed ? pline.NumberOfVertices - 1 : index - 1;
             if (pline.GetSegmentType(prev) != SegmentType.Line ||
                 pline.GetSegmentType(index) != SegmentType.Line)
@@ -200,8 +200,8 @@ namespace Gile.AutoCAD.Geometry
         /// <exception cref="ArgumentNullException">ArgumentException is thrown if <paramref name="plane"/> is null.</exception>
         public static Polyline? GetProjectedPolyline(this Polyline pline, Plane plane, Vector3d direction)
         {
-            Assert.IsNotNull(pline, nameof(pline));
-            Assert.IsNotNull(plane, nameof(plane));
+            ArgumentNullException.ThrowIfNull(pline);
+            ArgumentNullException.ThrowIfNull(plane);
             Tolerance tol = new(1e-9, 1e-9);
             if (plane.Normal.IsPerpendicularTo(direction, tol))
                 return null;
@@ -229,8 +229,8 @@ namespace Gile.AutoCAD.Geometry
         /// <exception cref="ArgumentNullException">ArgumentException is thrown if <paramref name="plane"/> is null.</exception>
         public static Polyline? GetOrthoProjectedPolyline(this Polyline pline, Plane plane)
         {
-            Assert.IsNotNull(pline, nameof(pline));
-            Assert.IsNotNull(plane, nameof(plane));
+            ArgumentNullException.ThrowIfNull(pline);
+            ArgumentNullException.ThrowIfNull(plane);
             return pline.GetProjectedPolyline(plane, plane.Normal);
         }
 
@@ -264,7 +264,7 @@ namespace Gile.AutoCAD.Geometry
         /// <exception cref="ArgumentNullException">ArgumentException is thrown if <paramref name="pline"/> is null.</exception>
         public static PointContainment GetPointContainment(this Polyline pline, Point3d point)
         {
-            Assert.IsNotNull(pline, nameof(pline));
+            ArgumentNullException.ThrowIfNull(pline);
             return pline.GetPointContainment(point, Tolerance.Global.EqualPoint);
         }
 
@@ -278,7 +278,7 @@ namespace Gile.AutoCAD.Geometry
         /// <exception cref="ArgumentNullException">ArgumentException is thrown if <paramref name="pline"/> is null.</exception>
         public static PointContainment GetPointContainment(this Polyline pline, Point3d point, double tolerance)
         {
-            Assert.IsNotNull(pline, nameof(pline));
+            ArgumentNullException.ThrowIfNull(pline);
             ArgumentNullException.ThrowIfNull(pline);
 
             if (!pline.Closed)
@@ -311,7 +311,7 @@ namespace Gile.AutoCAD.Geometry
         /// <remarks>The Curve.Spline property throws eNotApplicable exception when called on a Polyline instance.</remarks>
         public static Spline? GetSpline(this Polyline pline)
         {
-            Assert.IsNotNull(pline, nameof(pline));
+            ArgumentNullException.ThrowIfNull(pline);
             Spline? spline = null;
             void CreateSpline(NurbCurve3d nurb)
             {
@@ -345,7 +345,7 @@ namespace Gile.AutoCAD.Geometry
         /// <exception cref="ArgumentNullException">ArgumentException is thrown if <paramref name="pline"/> is null.</exception>
         public static void NegateNormal(this Polyline pline)
         {
-            Assert.IsNotNull(pline, nameof(pline));
+            ArgumentNullException.ThrowIfNull(pline);
             var negatedNormal = pline.Normal.Negate();
             var plane = new Plane(Point3d.Origin, negatedNormal);
             for (int i = 0; i < pline.NumberOfVertices; i++)

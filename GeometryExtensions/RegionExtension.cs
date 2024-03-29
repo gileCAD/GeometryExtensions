@@ -5,7 +5,7 @@ using Autodesk.AutoCAD.Geometry;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Gile.AutoCAD.Geometry
+namespace Gile.AutoCAD.R19.Geometry
 {
     /// <summary>
     /// Provides extension methods for the Region type.

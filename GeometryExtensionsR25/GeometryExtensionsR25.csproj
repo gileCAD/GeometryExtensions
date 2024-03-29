@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFramework>net8.0-windows</TargetFramework>
     <OutputType>Library</OutputType>
-    <RootNamespace>Gile.AutoCAD.Geometry</RootNamespace>
+    <RootNamespace>Gile.AutoCAD.R25.Geometry</RootNamespace>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <AssemblyTitle>GeometryExtension</AssemblyTitle>
     <Company>Gilles Chanteau</Company>

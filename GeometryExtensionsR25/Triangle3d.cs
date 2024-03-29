@@ -3,7 +3,7 @@ using Autodesk.AutoCAD.Geometry;
 using System.Globalization;
 using Microsoft.SqlServer.Server;
 
-namespace Gile.AutoCAD.Geometry
+namespace Gile.AutoCAD.R25.Geometry
 {
     /// <summary>
     /// Describes a triangle within the 3D space. It can be seen as a structure of three Point3d.
@@ -30,7 +30,7 @@ namespace Gile.AutoCAD.Geometry
         /// <exception cref="ArgumentOutOfRangeException">ArgumentOutOfRangeException is thrown if <paramref name="points"/> length is different from 3.</exception>
         public Triangle3d(Point3d[] points)
         {
-            Assert.IsNotNull(points, nameof(points));
+            ArgumentNullException.ThrowIfNull(points);
             if (points.Length != 3)
                 throw new ArgumentOutOfRangeException(nameof(points), "Needs 3 points.");
 

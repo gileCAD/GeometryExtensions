@@ -5,7 +5,7 @@ using System.Linq;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
 
-namespace Gile.AutoCAD.Geometry
+namespace Gile.AutoCAD.R25.Geometry
 {
     /// <summary>
     /// Provides extension methods for Point3dCollection and IEnumerable&lt;Point3d&gt; types.
@@ -20,7 +20,7 @@ namespace Gile.AutoCAD.Geometry
         /// <exception cref="ArgumentNullException">ArgumentException is thrown if <paramref name="source"/> is null.</exception>
         public static IEnumerable<Point3d> RemoveDuplicates(this Point3dCollection source)
         {
-            Assert.IsNotNull(source, nameof(source));
+            ArgumentNullException.ThrowIfNull(source);
             return source.RemoveDuplicates(Tolerance.Global);
         }
 
@@ -33,7 +33,7 @@ namespace Gile.AutoCAD.Geometry
         /// <exception cref="ArgumentNullException">ArgumentException is thrown if <paramref name="source"/> is null.</exception>
         public static IEnumerable<Point3d> RemoveDuplicates(this Point3dCollection source, Tolerance tolerance)
         {
-            Assert.IsNotNull(source, nameof(source));
+            ArgumentNullException.ThrowIfNull(source);
             return source.Cast<Point3d>().Distinct(new Point3dComparer(tolerance));
         }
 
@@ -99,7 +99,7 @@ namespace Gile.AutoCAD.Geometry
         /// <exception cref="ArgumentException">ArgumentException is thrown if <paramref name="source"/> is empty.</exception>
         public static Extents3d ToExtents3d(this Point3dCollection source)
         {
-            Assert.IsNotNull(source, nameof(source));
+            ArgumentNullException.ThrowIfNull(source);
             Assert.IsNotEmpty(source, nameof(source));
             return source.Cast<Point3d>().ToExtents3d();
         }
@@ -113,7 +113,7 @@ namespace Gile.AutoCAD.Geometry
         /// <exception cref="ArgumentException">ArgumentException is thrown if <paramref name="source"/> is empty.</exception>
         public static Extents3d ToExtents3d(this IEnumerable<Point3d> source)
         {
-            Assert.IsNotNull(source, nameof(source));
+            ArgumentNullException.ThrowIfNull(source);
             Assert.IsNotEmpty(source, nameof(source));
             return source.Aggregate(new Extents3d(), (e, p) => { e.AddPoint(p); return e; });
         }

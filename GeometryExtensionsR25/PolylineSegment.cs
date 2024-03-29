@@ -2,7 +2,7 @@
 
 using System;
 
-namespace Gile.AutoCAD.Geometry
+namespace Gile.AutoCAD.R25.Geometry
 {
     /// <summary>
     /// Descibes a Polyline segment
@@ -81,7 +81,7 @@ namespace Gile.AutoCAD.Geometry
         /// <exception cref="ArgumentNullException">ArgumentException is thrown if <paramref name="line"/> is null.</exception>
         public PolylineSegment(LineSegment2d line)
         {
-            Assert.IsNotNull(line, nameof(line));
+            ArgumentNullException.ThrowIfNull(line);
             StartPoint = line.StartPoint;
             EndPoint = line.EndPoint;
             Bulge = 0.0;
@@ -96,7 +96,7 @@ namespace Gile.AutoCAD.Geometry
         /// <exception cref="ArgumentNullException">ArgumentException is thrown if <paramref name="arc"/> is null.</exception>
         public PolylineSegment(CircularArc2d arc)
         {
-            Assert.IsNotNull(arc, nameof(arc));
+            ArgumentNullException.ThrowIfNull(arc);
             StartPoint = arc.StartPoint;
             EndPoint = arc.EndPoint;
             Bulge = Math.Tan((arc.EndAngle - arc.StartAngle) / 4.0);
