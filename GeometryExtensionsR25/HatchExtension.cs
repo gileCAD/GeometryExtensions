@@ -20,7 +20,7 @@ namespace Gile.AutoCAD.R25.Geometry
         /// <exception cref="System.ArgumentNullException">ArgumentNullException is thrown if <paramref name="hatch"/> is null.</exception>
         public static List<Curve> GetBoundary(this Hatch hatch)
         {
-            ArgumentNullException.ThrowIfNull(hatch);
+            System.ArgumentNullException.ThrowIfNull(hatch);
             var result = new List<Curve>();
             for (int i = 0; i < hatch.NumberOfLoops; i++)
             {

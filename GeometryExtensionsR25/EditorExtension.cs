@@ -19,7 +19,7 @@ namespace Gile.AutoCAD.R25.Geometry
         /// <exception cref="System.ArgumentNullException">ArgumentNullException is thrown if <paramref name="ed"/> is null.</exception>
         public static Matrix3d UCS2WCS(this Editor ed)
         {
-            ArgumentNullException.ThrowIfNull(ed);
+            System.ArgumentNullException.ThrowIfNull(ed);
             return ed.CurrentUserCoordinateSystem;
         }
 
@@ -31,7 +31,7 @@ namespace Gile.AutoCAD.R25.Geometry
         /// <exception cref="System.ArgumentNullException">ArgumentNullException is thrown if <paramref name="ed"/> is null.</exception>
         public static Matrix3d WCS2UCS(this Editor ed)
         {
-            ArgumentNullException.ThrowIfNull(ed);
+            System.ArgumentNullException.ThrowIfNull(ed);
             return ed.CurrentUserCoordinateSystem.Inverse();
         }
 
@@ -43,7 +43,7 @@ namespace Gile.AutoCAD.R25.Geometry
         /// <exception cref="System.ArgumentNullException">ArgumentNullException is thrown if <paramref name="ed"/> is null.</exception>
         public static Matrix3d DCS2WCS(this Editor ed)
         {
-            ArgumentNullException.ThrowIfNull(ed);
+            System.ArgumentNullException.ThrowIfNull(ed);
             Matrix3d retVal = new();
             bool tilemode = ed.Document.Database.TileMode;
             if (!tilemode)
@@ -68,7 +68,7 @@ namespace Gile.AutoCAD.R25.Geometry
         /// <exception cref="System.ArgumentNullException">ArgumentNullException is thrown if <paramref name="ed"/> is null.</exception>
         public static Matrix3d WCS2DCS(this Editor ed)
         {
-            ArgumentNullException.ThrowIfNull(ed);
+            System.ArgumentNullException.ThrowIfNull(ed);
             return ed.DCS2WCS().Inverse();
         }
 
@@ -84,29 +84,27 @@ namespace Gile.AutoCAD.R25.Geometry
         /// eCannotChangeActiveViewport is thrown if there is none floating viewport in the current layout.</exception>
         public static Matrix3d DCS2PSDCS(this Editor ed)
         {
-            ArgumentNullException.ThrowIfNull(ed);
+            System.ArgumentNullException.ThrowIfNull(ed);
             Database db = ed.Document.Database;
             if (db.TileMode)
                 throw new AcRx.Exception(AcRx.ErrorStatus.NotInPaperspace);
-            using (Transaction tr = db.TransactionManager.StartTransaction())
+            using Transaction tr = db.TransactionManager.StartTransaction();
+            Viewport vp =
+                (Viewport)tr.GetObject(ed.CurrentViewportObjectId, OpenMode.ForRead);
+            if (vp.Number == 1)
             {
-                Viewport vp =
-                    (Viewport)tr.GetObject(ed.CurrentViewportObjectId, OpenMode.ForRead);
-                if (vp.Number == 1)
+                try
                 {
-                    try
-                    {
-                        ed.SwitchToModelSpace();
-                        vp = (Viewport)tr.GetObject(ed.CurrentViewportObjectId, OpenMode.ForRead);
-                        ed.SwitchToPaperSpace();
-                    }
-                    catch
-                    {
-                        throw new AcRx.Exception(AcRx.ErrorStatus.CannotChangeActiveViewport);
-                    }
+                    ed.SwitchToModelSpace();
+                    vp = (Viewport)tr.GetObject(ed.CurrentViewportObjectId, OpenMode.ForRead);
+                    ed.SwitchToPaperSpace();
                 }
-                return vp.DCS2PSDCS();
+                catch
+                {
+                    throw new AcRx.Exception(AcRx.ErrorStatus.CannotChangeActiveViewport);
+                }
             }
+            return vp.DCS2PSDCS();
         }
 
         /// <summary>
@@ -121,7 +119,7 @@ namespace Gile.AutoCAD.R25.Geometry
         /// eCannotChangeActiveViewport is thrown if there is none floating viewport in the current layout.</exception>
         public static Matrix3d PSDCS2DCS(this Editor ed)
         {
-            ArgumentNullException.ThrowIfNull(ed);
+            System.ArgumentNullException.ThrowIfNull(ed);
             return ed.DCS2PSDCS().Inverse();
         }
     }

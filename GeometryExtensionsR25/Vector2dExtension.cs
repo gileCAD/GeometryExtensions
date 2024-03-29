@@ -24,7 +24,7 @@ namespace Gile.AutoCAD.R25.Geometry
         /// <exception cref="System.ArgumentNullException">ArgumentException is thrown if <paramref name="plane"/> is null.</exception>
         public static Vector3d Convert3d(this Vector2d vector, Plane plane)
         {
-            ArgumentNullException.ThrowIfNull(plane);
+            System.ArgumentNullException.ThrowIfNull(plane);
             return vector.Convert3d().TransformBy(Matrix3d.PlaneToWorld(plane));
         }
     }
