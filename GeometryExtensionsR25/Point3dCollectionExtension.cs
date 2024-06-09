@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-
-using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoCAD.Geometry;
-
-namespace Gile.AutoCAD.R25.Geometry
+﻿namespace Gile.AutoCAD.Geometry
 {
     /// <summary>
     /// Provides extension methods for Point3dCollection and IEnumerable&lt;Point3d&gt; types.
@@ -20,7 +13,7 @@ namespace Gile.AutoCAD.R25.Geometry
         /// <exception cref="ArgumentNullException">ArgumentException is thrown if <paramref name="source"/> is null.</exception>
         public static IEnumerable<Point3d> RemoveDuplicates(this Point3dCollection source)
         {
-            ArgumentNullException.ThrowIfNull(source);
+            Assert.IsNotNull(source, nameof(source));
             return source.RemoveDuplicates(Tolerance.Global);
         }
 
@@ -33,7 +26,7 @@ namespace Gile.AutoCAD.R25.Geometry
         /// <exception cref="ArgumentNullException">ArgumentException is thrown if <paramref name="source"/> is null.</exception>
         public static IEnumerable<Point3d> RemoveDuplicates(this Point3dCollection source, Tolerance tolerance)
         {
-            ArgumentNullException.ThrowIfNull(source);
+            Assert.IsNotNull(source, nameof(source));
             return source.Cast<Point3d>().Distinct(new Point3dComparer(tolerance));
         }
 
@@ -55,7 +48,8 @@ namespace Gile.AutoCAD.R25.Geometry
         /// <exception cref="ArgumentNullException">ArgumentException is thrown if <paramref name="source"/> is null.</exception>
         public static IEnumerable<Point3d> RemoveDuplicates(this IEnumerable<Point3d> source, Tolerance tolerance)
         {
-            ArgumentNullException.ThrowIfNull(source);
+            if (source == null)
+                throw new ArgumentNullException(nameof(source));
 
             return source.Distinct(new Point3dComparer(tolerance));
         }
@@ -80,7 +74,8 @@ namespace Gile.AutoCAD.R25.Geometry
         /// <exception cref="ArgumentNullException">ArgumentException is thrown if <paramref name="source"/> is null.</exception>
         public static bool Contains(this Point3dCollection source, Point3d pt, Tolerance tol)
         {
-            ArgumentNullException.ThrowIfNull(source);
+            if (source == null)
+                throw new ArgumentNullException(nameof(source));
 
             for (int i = 0; i < source.Count; i++)
             {
@@ -99,7 +94,7 @@ namespace Gile.AutoCAD.R25.Geometry
         /// <exception cref="ArgumentException">ArgumentException is thrown if <paramref name="source"/> is empty.</exception>
         public static Extents3d ToExtents3d(this Point3dCollection source)
         {
-            ArgumentNullException.ThrowIfNull(source);
+            Assert.IsNotNull(source, nameof(source));
             Assert.IsNotEmpty(source, nameof(source));
             return source.Cast<Point3d>().ToExtents3d();
         }
@@ -113,7 +108,7 @@ namespace Gile.AutoCAD.R25.Geometry
         /// <exception cref="ArgumentException">ArgumentException is thrown if <paramref name="source"/> is empty.</exception>
         public static Extents3d ToExtents3d(this IEnumerable<Point3d> source)
         {
-            ArgumentNullException.ThrowIfNull(source);
+            Assert.IsNotNull(source, nameof(source));
             Assert.IsNotEmpty(source, nameof(source));
             return source.Aggregate(new Extents3d(), (e, p) => { e.AddPoint(p); return e; });
         }

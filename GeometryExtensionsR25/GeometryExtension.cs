@@ -1,9 +1,7 @@
-﻿using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoCAD.Geometry;
+﻿
 
-using System;
 
-namespace Gile.AutoCAD.R25.Geometry
+namespace Gile.AutoCAD.Geometry
 {
     /// <summary>
     /// Enumeration of AutoCAD coordinate systems.
@@ -64,9 +62,9 @@ namespace Gile.AutoCAD.R25.Geometry
         /// <exception cref="ArgumentNullException">ArgumentNullException is thrown if <paramref name="plane"/> is null.</exception>
         internal static Polyline? ProjectPolyline(Curve pline, Plane plane, Vector3d direction)
         {
-            ArgumentNullException.ThrowIfNull(pline);
-            ArgumentNullException.ThrowIfNull(plane);
-            if (pline is not Polyline && pline is not Polyline2d && pline is not Polyline3d)
+            Assert.IsNotNull(pline, nameof(pline));
+            Assert.IsNotNull(plane, nameof(plane));
+            if (!(pline is Polyline) && !(pline is Polyline2d) && !(pline is Polyline3d))
                 return null;
             using DBObjectCollection oldCol = [];
             using DBObjectCollection newCol = [];
@@ -127,8 +125,8 @@ namespace Gile.AutoCAD.R25.Geometry
         /// <exception cref="ArgumentNullException">ArgumentNullException is thrown if <paramref name="dirPlane"/> is null.</exception>
         internal static Polyline ProjectExtents(Extents3d extents, Plane plane, Vector3d direction, Plane dirPlane)
         {
-            ArgumentNullException.ThrowIfNull(plane);
-            ArgumentNullException.ThrowIfNull(dirPlane);
+            Assert.IsNotNull(plane, nameof(plane));
+            Assert.IsNotNull(dirPlane, nameof(dirPlane));
             Point3d pt1 = extents.MinPoint.TransformBy(Matrix3d.PlaneToWorld(dirPlane));
             Point3d pt2 = extents.MaxPoint.TransformBy(Matrix3d.PlaneToWorld(dirPlane));
             Polyline projectedPline = new(2);

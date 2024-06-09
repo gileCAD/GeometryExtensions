@@ -1,8 +1,4 @@
-﻿using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoCAD.Geometry;
-using AcRx = Autodesk.AutoCAD.Runtime;
-
-namespace Gile.AutoCAD.R25.Geometry
+﻿namespace Gile.AutoCAD.Geometry
 {
     /// <summary>
     /// Provides extension methods for the Spline type.
@@ -19,12 +15,12 @@ namespace Gile.AutoCAD.R25.Geometry
         /// <exception cref="Autodesk.AutoCAD.Runtime.Exception">eNotApplicable is thrown if the spline is not closed.</exception>
         public static Point3d Centroid(this Spline spline)
         {
-            System.ArgumentNullException.ThrowIfNull(spline);
+            Assert.IsNotNull(spline, nameof(spline));
             if (!spline.IsPlanar)
                 throw new AcRx.Exception(AcRx.ErrorStatus.NonPlanarEntity);
             if (spline.Closed != true)
                 throw new AcRx.Exception(AcRx.ErrorStatus.NotApplicable);
-            using DBObjectCollection curves = [];
+            using DBObjectCollection curves = new();
             curves.Add(spline);
             using DBObjectCollection dboc = Region.CreateFromCurves(curves);
             return ((Region)dboc[0]).Centroid();

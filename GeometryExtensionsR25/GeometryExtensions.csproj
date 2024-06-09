@@ -1,0 +1,123 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFramework>net8.0-windows</TargetFramework>
+		<OutputType>Library</OutputType>
+		<RootNamespace>Gile.AutoCAD.Geometry</RootNamespace>
+		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+		<AssemblyTitle>GeometryExtension</AssemblyTitle>
+		<Company>Gilles Chanteau</Company>
+		<Product>GeometryExtension</Product>
+		<Copyright>Copyright © Gilles Chanteau 2016</Copyright>
+		<AssemblyVersion>2.1.0.0</AssemblyVersion>
+		<FileVersion>2.1.0.0</FileVersion>
+		<LangVersion>latest</LangVersion>
+		<PlatformTarget>x64</PlatformTarget>
+		<Nullable>enable</Nullable>
+		<Platforms>x64</Platforms>
+		<Configurations>AutoCAD_Debug;AutoCAD25_Debug;BricsCAD_Debug;</Configurations>
+		<Configurations>$(Configurations)AutoCAD_Release;AutoCAD25_Release;BricsCAD_Release;</Configurations>
+		<ImplicitUsings>enable</ImplicitUsings>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+		<DocumentationFile>bin\Release\GeometryExtensions.XML</DocumentationFile>
+	</PropertyGroup>
+	<PropertyGroup Condition="$(Configuration.Contains('Debug'))">
+		<DebugSymbols>true</DebugSymbols>
+		<DefineConstants>TRACE;DEBUG;TA_BOTH_DLL</DefineConstants>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="$(Configuration.Contains('Release'))">
+		<Optimize>true</Optimize>
+		<DefineConstants>TRACE;TA_BOTH_DLL</DefineConstants>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="$(Configuration.Contains('AutoCAD'))">
+		<DefineConstants>$(DefineConstants); ACAD_APP</DefineConstants>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="$(Configuration.Contains('BricsCAD'))">
+		<DefineConstants>$(DefineConstants);TA_BOTH_DLL; BRX_APP</DefineConstants>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)' == 'AutoCAD_Debug'">
+		<TargetFramework>net48</TargetFramework>
+		<OutputPath>bin\AutoCAD_Debug\</OutputPath>
+		<AssemblyName>GeometryExtensionR19</AssemblyName>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)' == 'AutoCAD_Release'">
+		<TargetFramework>net48</TargetFramework>
+		<OutputPath>bin\AutoCAD_Release\</OutputPath>
+		<AssemblyName>GeometryExtensionR19</AssemblyName>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)' == 'AutoCAD25_Debug'">
+		<TargetFramework>net8.0-windows</TargetFramework>
+		<OutputPath>bin\AutoCAD_Debug\</OutputPath>
+		<AssemblyName>GeometryExtensionR25</AssemblyName>
+		<DefineConstants>$(DefineConstants); ACAD_2025</DefineConstants>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)' == 'AutoCAD25_Release'">
+		<TargetFramework>net8.0-windows</TargetFramework>
+		<OutputPath>bin\AutoCAD_Release\</OutputPath>
+		<AssemblyName>GeometryExtensionR25</AssemblyName>
+		<DefineConstants>$(DefineConstants); ACAD_2025</DefineConstants>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)' == 'BricsCAD_Debug'">
+		<TargetFramework>net48</TargetFramework>
+		<OutputPath>bin\BricsCAD_Debug\</OutputPath>
+		<AssemblyName>GeometryExtensionBrics</AssemblyName>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)' == 'BricsCAD_Release'">
+		<TargetFramework>net48</TargetFramework>
+		<OutputPath>bin\BricsCAD_Release\</OutputPath>
+		<AssemblyName>GeometryExtensionBrics</AssemblyName>
+	</PropertyGroup>
+
+	<!--<ItemGroup Condition="$(Configuration.Contains('AutoCAD'))">
+		<FrameworkReference Include="Microsoft.WindowsDesktop.App" />
+	</ItemGroup>-->
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
+		<PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
+	</ItemGroup>
+	<ItemGroup Condition="$(Configuration.Contains('AutoCAD')) And $(Configuration.Contains('25'))">
+		<PackageReference Include="AutoCAD.NET" Version="25.*" ExcludeAssets="runtime" />
+		<PackageReference Include="acmpolygonmgd.dll" Version="1.0.0" ExcludeAssets="runtime" />
+	</ItemGroup>
+	<ItemGroup Condition="$(Configuration.Contains('AutoCAD')) And !$(Configuration.Contains('25'))">
+		<PackageReference Include="AutoCAD.NET" Version="24.*" ExcludeAssets="runtime" />
+		<PackageReference Include="acmpolygonmgd.dll" Version="1.0.0" ExcludeAssets="runtime" />
+	</ItemGroup>
+	<ItemGroup Condition="$(Configuration.Contains('BricsCAD'))">
+		<PackageReference Include="BricsCAD_v21_Net_dlls" Version="1.0.0" ExcludeAssets="runtime" />
+	</ItemGroup>
+
+	<ItemGroup Condition="$(Configuration.Contains('AutoCAD'))">
+		<Using Include="Autodesk.AutoCAD.Geometry" />
+		<Using Include="Autodesk.AutoCAD.DatabaseServices" />
+		<Using Include="Autodesk.AutoCAD.EditorInput" />
+		<Using Include="Autodesk.AutoCAD.ApplicationServices" />
+		<Using Include="Autodesk.AutoCAD.Runtime" />
+		<Using Include="Autodesk.AutoCAD.BoundaryRepresentation" />
+		<Using Include="Autodesk.AutoCAD.Runtime">
+			<Alias>AcRx</Alias>
+		</Using>
+	</ItemGroup>
+	<ItemGroup Condition="$(Configuration.Contains('BricsCAD'))">
+		<Using Include="Teigha.Geometry" />
+		<Using Include="Teigha.DatabaseServices" />
+		<Using Include="Bricscad.EditorInput" />
+		<Using Include="Bricscad.ApplicationServices" />
+		<Using Include="Teigha.Runtime" />
+		<Using Include="Teigha.BoundaryRepresentation" />
+		<Using Include="Teigha.Runtime">
+			<Alias>AcRx</Alias>
+		</Using>
+	</ItemGroup>
+
+</Project>

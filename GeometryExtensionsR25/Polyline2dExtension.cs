@@ -1,12 +1,4 @@
-﻿using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoCAD.Geometry;
-
-using System;
-using System.Collections.Generic;
-
-using AcRx = Autodesk.AutoCAD.Runtime;
-
-namespace Gile.AutoCAD.R25.Geometry
+﻿namespace Gile.AutoCAD.Geometry
 {
     /// <summary>
     /// Provides extension methods for the Polyline2d type.
@@ -23,11 +15,11 @@ namespace Gile.AutoCAD.R25.Geometry
         /// eNoActiveTransactions is thrown if the lethod is called outside of a Transaction.</exception>
         public static List<Vertex2d> GetVertices(this Polyline2d pline)
         {
-            ArgumentNullException.ThrowIfNull(pline);
+            Assert.IsNotNull(pline, nameof(pline));
             Transaction tr = 
                 pline.Database.TransactionManager.TopTransaction ?? 
                 throw new AcRx.Exception(AcRx.ErrorStatus.NoActiveTransactions);
-            List<Vertex2d> vertices = [];
+            List<Vertex2d> vertices = new();
             foreach (ObjectId id in pline)
             {
                 Vertex2d vx = (Vertex2d)tr.GetObject(id, OpenMode.ForRead);
@@ -48,7 +40,7 @@ namespace Gile.AutoCAD.R25.Geometry
         /// ArgumentOutOfRangeException if <paramref name="index"/> is out of the indices range.</exception>
         public static LineSegment3d GetLineSegmentAt(this Polyline2d pline, int index)
         {
-            ArgumentNullException.ThrowIfNull(pline);
+            Assert.IsNotNull(pline, nameof(pline));
             try
             {
                 return new LineSegment3d(
@@ -72,7 +64,7 @@ namespace Gile.AutoCAD.R25.Geometry
         /// ArgumentOutOfRangeException if the index id out of the indices range.</exception>
         public static LineSegment2d GetLineSegment2dAt(this Polyline2d pline, int index)
         {
-            ArgumentNullException.ThrowIfNull(pline);
+            Assert.IsNotNull(pline, nameof(pline));
             try
             {
                 Matrix3d WCS2ECS = pline.Ecs.Inverse();
@@ -97,7 +89,7 @@ namespace Gile.AutoCAD.R25.Geometry
         /// ArgumentOutOfRangeException if the index id out of the indices range.</exception>
         public static CircularArc3d GetArcSegmentAt(this Polyline2d pline, int index)
         {
-            ArgumentNullException.ThrowIfNull(pline);
+            Assert.IsNotNull(pline, nameof(pline));
             try
             {
                 return new CircularArc3d(
@@ -122,7 +114,7 @@ namespace Gile.AutoCAD.R25.Geometry
         /// ArgumentOutOfRangeException if the index id out of the indices range.</exception>
         public static CircularArc2d GetArcSegment2dAt(this Polyline2d pline, int index)
         {
-            ArgumentNullException.ThrowIfNull(pline);
+            Assert.IsNotNull(pline, nameof(pline));
             try
             {
                 Matrix3d WCS2ECS = pline.Ecs.Inverse();
@@ -145,8 +137,8 @@ namespace Gile.AutoCAD.R25.Geometry
         /// <exception cref="ArgumentNullException">ArgumentException is thrown if <paramref name="pline"/> is null.</exception>
         public static Point3d Centroid(this Polyline2d pline)
         {
-            ArgumentNullException.ThrowIfNull(pline);
-            Vertex2d[] vertices = [.. pline.GetVertices()];
+            Assert.IsNotNull(pline, nameof(pline));
+            Vertex2d[] vertices = pline.GetVertices().ToArray();
             int last = vertices.Length - 1;
             Vertex2d vertex = vertices[0];
             Point2d p0 = vertex.Position.Convert2d();
@@ -207,8 +199,8 @@ namespace Gile.AutoCAD.R25.Geometry
         /// <exception cref="ArgumentNullException">ArgumentException is thrown if <paramref name="plane"/> is null.</exception>
         public static Polyline? GetProjectedPolyline(this Polyline2d pline, Plane plane, Vector3d direction)
         {
-            ArgumentNullException.ThrowIfNull(pline);
-            ArgumentNullException.ThrowIfNull(pline);
+            Assert.IsNotNull(pline, nameof(pline));
+            Assert.IsNotNull(pline, nameof(plane));
             Tolerance tol = new(1e-9, 1e-9);
             if (plane.Normal.IsPerpendicularTo(direction, tol))
                 return null;

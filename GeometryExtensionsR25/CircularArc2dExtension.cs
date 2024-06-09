@@ -1,7 +1,4 @@
-﻿using System;
-using Autodesk.AutoCAD.Geometry;
-
-namespace Gile.AutoCAD.R25.Geometry
+﻿namespace Gile.AutoCAD.Geometry
 {
     /// <summary>
     /// Provides extension methods for the CircularArc2d type.
@@ -16,7 +13,7 @@ namespace Gile.AutoCAD.R25.Geometry
         /// <exception cref="ArgumentNullException">ArgumentNullException is thrown if <paramref name="arc"/> is null.</exception>
         public static double SignedArea(this CircularArc2d arc)
         {
-            ArgumentNullException.ThrowIfNull(arc);
+            Assert.IsNotNull(arc, nameof(arc));
             double rad = arc.Radius;
             double ang = arc.IsClockWise ?
                 arc.StartAngle - arc.EndAngle :
@@ -32,7 +29,7 @@ namespace Gile.AutoCAD.R25.Geometry
         /// <exception cref="ArgumentNullException">ArgumentNullException is thrown if <paramref name="arc"/> is null.</exception>
         public static Point2d Centroid(this CircularArc2d arc)
         {
-            ArgumentNullException.ThrowIfNull(arc);
+            Assert.IsNotNull(arc, nameof(arc));
             Point2d start = arc.StartPoint;
             Point2d end = arc.EndPoint;
             double area = arc.SignedArea();
@@ -54,7 +51,7 @@ namespace Gile.AutoCAD.R25.Geometry
         /// <exception cref="ArgumentNullException">ArgumentNullException is thrown if <paramref name="arc"/> is null.</exception>
         public static LineSegment2d[]? GetTangentsTo(this CircularArc2d arc, Point2d pt)
         {
-            ArgumentNullException.ThrowIfNull(arc);
+            Assert.IsNotNull(arc, nameof(arc));
             // check if the point is inside the circle
             Point2d center = arc.Center;
             if (pt.GetDistanceTo(center) <= arc.Radius)
@@ -90,8 +87,8 @@ namespace Gile.AutoCAD.R25.Geometry
         /// <exception cref="ArgumentNullException">ArgumentNullException is thrown if <paramref name="other"/> is null.</exception>
         public static LineSegment2d[]? GetTangentsTo(this CircularArc2d arc, CircularArc2d other, TangentType flags)
         {
-            ArgumentNullException.ThrowIfNull(arc);
-            ArgumentNullException.ThrowIfNull(other);
+            Assert.IsNotNull(arc, nameof(arc));
+            Assert.IsNotNull(other, nameof(other));
             // check if a circle is inside the other
             double dist = arc.Center.GetDistanceTo(other.Center);
             if (dist - Math.Abs(arc.Radius - other.Radius) <= Tolerance.Global.EqualPoint)

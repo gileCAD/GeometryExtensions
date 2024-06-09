@@ -1,13 +1,6 @@
-﻿using Autodesk.AutoCAD.Geometry;
+﻿using static System.Math;
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-using static System.Math;
-
-namespace Gile.AutoCAD.R25.Geometry
+namespace Gile.AutoCAD.Geometry
 {
     /// <summary>
     /// Provides methods to organize locatable objects in a Kd tree structure to speed up the search of neighbours.
@@ -40,8 +33,8 @@ namespace Gile.AutoCAD.R25.Geometry
         /// <exception cref="ArgumentOutOfRangeException">Thrown if dimension is lower than2 or greater than 3.</exception>
         public KdTree(IEnumerable<T>? source, Func<T, Point3d>? getPosition, int dimension)
         {
-            ArgumentNullException.ThrowIfNull(source);
-            ArgumentNullException.ThrowIfNull(getPosition);
+            Assert.IsNotNull(source, nameof(source));
+            Assert.IsNotNull(getPosition, nameof(getPosition));
             if (dimension < 2 || 3 < dimension)
                 throw new ArgumentOutOfRangeException(nameof(dimension));
             this.getPosition = getPosition;
