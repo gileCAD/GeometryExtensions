@@ -1,11 +1,6 @@
-﻿using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoCAD.Geometry;
+﻿using static System.Math;
 
-using System.Collections.Generic;
-
-using static System.Math;
-
-namespace Gile.AutoCAD.R25.Geometry
+namespace Gile.AutoCAD.Geometry
 {
     /// <summary>
     /// Provides extension methods for the Hatch type.
@@ -20,7 +15,7 @@ namespace Gile.AutoCAD.R25.Geometry
         /// <exception cref="System.ArgumentNullException">ArgumentNullException is thrown if <paramref name="hatch"/> is null.</exception>
         public static List<Curve> GetBoundary(this Hatch hatch)
         {
-            System.ArgumentNullException.ThrowIfNull(hatch);
+            Assert.IsNotNull(hatch, nameof(hatch));
             var result = new List<Curve>();
             for (int i = 0; i < hatch.NumberOfLoops; i++)
             {

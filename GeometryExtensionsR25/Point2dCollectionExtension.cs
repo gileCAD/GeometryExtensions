@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Autodesk.AutoCAD.Geometry;
-
-namespace Gile.AutoCAD.R25.Geometry
+﻿namespace Gile.AutoCAD.Geometry
 {
     /// <summary>
     /// Provides extension methods for the Point2dCollection and IEnumerable&lt;Point2d&gt; types.
@@ -18,7 +13,7 @@ namespace Gile.AutoCAD.R25.Geometry
         /// <exception cref="ArgumentNullException">ArgumentException is thrown if <paramref name="source"/> is null.</exception>
         public static IEnumerable<Point2d> RemoveDuplicates(this Point2dCollection source)
         {
-            ArgumentNullException.ThrowIfNull(source);
+            Assert.IsNotNull(source, nameof(source));
             return source.RemoveDuplicates(Tolerance.Global);
         }
 
@@ -31,7 +26,7 @@ namespace Gile.AutoCAD.R25.Geometry
         /// <exception cref="ArgumentNullException">ArgumentException is thrown if <paramref name="source"/> is null.</exception>
         public static IEnumerable<Point2d> RemoveDuplicates(this Point2dCollection source, Tolerance tolerance)
         {
-            ArgumentNullException.ThrowIfNull(source);
+            Assert.IsNotNull(source, nameof(source));
             return source.Cast<Point2d>().Distinct(new Point2dComparer(tolerance));
         }
 
@@ -43,7 +38,7 @@ namespace Gile.AutoCAD.R25.Geometry
         /// <exception cref="ArgumentNullException">ArgumentException is thrown if <paramref name="source"/> is null.</exception>
         public static IEnumerable<Point2d> RemoveDuplicates(this IEnumerable<Point2d> source)
         {
-            ArgumentNullException.ThrowIfNull(source);
+            Assert.IsNotNull(source, nameof(source));
             return source.RemoveDuplicates(Tolerance.Global);
         }
 
@@ -56,7 +51,7 @@ namespace Gile.AutoCAD.R25.Geometry
         /// <exception cref="ArgumentNullException">ArgumentException is thrown if <paramref name="source"/> is null.</exception>
         public static IEnumerable<Point2d> RemoveDuplicates(this IEnumerable<Point2d> source, Tolerance tolerance)
         {
-            ArgumentNullException.ThrowIfNull(source);
+            Assert.IsNotNull(source, nameof(source));
             return source.Distinct(new Point2dComparer(tolerance));
         }
 
@@ -69,7 +64,7 @@ namespace Gile.AutoCAD.R25.Geometry
         /// <exception cref="ArgumentNullException">ArgumentException is thrown if <paramref name="source"/> is null.</exception>
         public static bool Contains(this Point2dCollection source, Point2d point)
         {
-            ArgumentNullException.ThrowIfNull(source);
+            Assert.IsNotNull(source, nameof(source));
             return source.Contains(point, Tolerance.Global);
         }
 
@@ -83,7 +78,7 @@ namespace Gile.AutoCAD.R25.Geometry
         /// <exception cref="ArgumentNullException">ArgumentException is thrown if <paramref name="source"/> is null.</exception>
         public static bool Contains(this Point2dCollection source, Point2d point, Tolerance tol)
         {
-            ArgumentNullException.ThrowIfNull(source);
+            Assert.IsNotNull(source, nameof(source));
             for (int i = 0; i < source.Count; i++)
             {
                 if (point.IsEqualTo(source[i], tol))

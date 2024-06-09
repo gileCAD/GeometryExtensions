@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-
-using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoCAD.Geometry;
-
-namespace Gile.AutoCAD.R25.Geometry
+﻿namespace Gile.AutoCAD.Geometry
 {
     /// <summary>
     /// Describes a Polygon 2D.
@@ -19,7 +12,7 @@ namespace Gile.AutoCAD.R25.Geometry
         /// <exception cref="ArgumentNullException">ArgumentException is thrown if <paramref name="segments"/> is null.</exception>
         public Polygon2d(IEnumerable<LineSegment2d> segments)
         {
-            ArgumentNullException.ThrowIfNull(segments);
+            Assert.IsNotNull(segments, nameof(segments));
             Segments = segments.ToArray();
             Vertices = segments.Select(s => s.StartPoint).ToArray();
             NumberOfVertices = Vertices.Length;
@@ -33,7 +26,7 @@ namespace Gile.AutoCAD.R25.Geometry
         /// <exception cref="ArgumentNullException">ArgumentException is thrown if <paramref name="vertices"/> is null.</exception>
         public Polygon2d(IEnumerable<Point2d> vertices)
         {
-            ArgumentNullException.ThrowIfNull(vertices);
+            Assert.IsNotNull(vertices, nameof(vertices));
             Vertices = vertices.ToArray();
             NumberOfVertices = Vertices.Length;
             Segments = new LineSegment2d[NumberOfVertices];

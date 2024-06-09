@@ -1,8 +1,6 @@
-﻿using System;
-using Autodesk.AutoCAD.Geometry;
-using static System.Math;
+﻿using static System.Math;
 
-namespace Gile.AutoCAD.R25.Geometry
+namespace Gile.AutoCAD.Geometry
 {
     /// <summary>
     /// Provides conversions between Euler angles, transformation matrix and Normal / Rotation properties.

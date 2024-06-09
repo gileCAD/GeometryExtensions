@@ -1,11 +1,6 @@
-﻿using System;
-using Autodesk.AutoCAD.ApplicationServices;
-using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoCAD.EditorInput;
-using Autodesk.AutoCAD.Geometry;
-using AcRx = Autodesk.AutoCAD.Runtime;
+﻿
 
-namespace Gile.AutoCAD.R25.Geometry
+namespace Gile.AutoCAD.Geometry
 {
     /// <summary>
     /// Provides extension methods for the Point2d type.

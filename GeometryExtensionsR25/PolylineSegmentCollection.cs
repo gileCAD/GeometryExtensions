@@ -1,11 +1,4 @@
-﻿using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoCAD.Geometry;
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace Gile.AutoCAD.R25.Geometry
+﻿namespace Gile.AutoCAD.Geometry
 {
     /// <summary>
     /// Describes a PolylineSegment collection.
@@ -40,7 +33,7 @@ namespace Gile.AutoCAD.R25.Geometry
         /// <exception cref="ArgumentNullException">ArgumentException is thrown if <paramref name="segments"/> is null.</exception>
         public PolylineSegmentCollection(IEnumerable<PolylineSegment> segments)
         {
-            ArgumentNullException.ThrowIfNull(segments);
+            Assert.IsNotNull(segments, nameof(segments));
             AddRange(segments);
         }
 
@@ -51,7 +44,7 @@ namespace Gile.AutoCAD.R25.Geometry
         /// <exception cref="ArgumentNullException">ArgumentException is thrown if <paramref name="segments"/> is null.</exception>
         public PolylineSegmentCollection(params PolylineSegment[] segments)
         {
-            ArgumentNullException.ThrowIfNull(segments);
+            Assert.IsNotNull(segments, nameof(segments));
             AddRange(segments);
         }
 
@@ -62,7 +55,7 @@ namespace Gile.AutoCAD.R25.Geometry
         /// <exception cref="ArgumentNullException">ArgumentException is thrown if <paramref name="pline"/> is null.</exception>
         public PolylineSegmentCollection(Polyline pline)
         {
-            ArgumentNullException.ThrowIfNull(pline);
+            Assert.IsNotNull(pline, nameof(pline));
             int n = pline.NumberOfVertices - 1;
             for (int i = 0; i < n; i++)
             {
@@ -91,7 +84,7 @@ namespace Gile.AutoCAD.R25.Geometry
         /// <exception cref="ArgumentNullException">ArgumentException is thrown if <paramref name="pline"/> is null.</exception>
         public PolylineSegmentCollection(Polyline2d pline)
         {
-            ArgumentNullException.ThrowIfNull(pline);
+            Assert.IsNotNull(pline, nameof(pline));
             Vertex2d[] vertices = pline.GetVertices().ToArray();
             int n = vertices.Length - 1;
             for (int i = 0; i < n; i++)
@@ -123,7 +116,7 @@ namespace Gile.AutoCAD.R25.Geometry
         /// <exception cref="ArgumentNullException">ArgumentException is thrown if <paramref name="circle"/> is null.</exception>
         public PolylineSegmentCollection(Circle circle)
         {
-            ArgumentNullException.ThrowIfNull(circle);
+            Assert.IsNotNull(circle, nameof(circle));
             Plane plane = new(Point3d.Origin, circle.Normal);
             Point2d cen = circle.Center.Convert2d(plane);
             Vector2d vec = new(circle.Radius, 0.0);
@@ -138,7 +131,7 @@ namespace Gile.AutoCAD.R25.Geometry
         /// <exception cref="ArgumentNullException">ArgumentException is thrown if <paramref name="ellipse"/> is null.</exception>
         public PolylineSegmentCollection(Ellipse ellipse)
         {
-            ArgumentNullException.ThrowIfNull(ellipse);
+            Assert.IsNotNull(ellipse, nameof(ellipse));
             double pi = Math.PI;
             Plane plane = new(Point3d.Origin, ellipse.Normal);
             Point3d cen3d = ellipse.Center;
@@ -269,7 +262,7 @@ namespace Gile.AutoCAD.R25.Geometry
         /// <exception cref="ArgumentNullException">ArgumentException is thrown if <paramref name="pline"/> is null.</exception>
         public void AddRange(Polyline pline)
         {
-            ArgumentNullException.ThrowIfNull(pline);
+            Assert.IsNotNull(pline, nameof(pline));
             AddRange(new PolylineSegmentCollection(pline));
         }
 
@@ -280,7 +273,7 @@ namespace Gile.AutoCAD.R25.Geometry
         /// <exception cref="ArgumentNullException">ArgumentException is thrown if <paramref name="plines"/> is null.</exception>
         public void AddRange(IEnumerable<Polyline> plines)
         {
-            ArgumentNullException.ThrowIfNull(plines);
+            Assert.IsNotNull(plines, nameof(plines));
             AddRange(plines.SelectMany(pl => new PolylineSegmentCollection(pl)));
         }
 

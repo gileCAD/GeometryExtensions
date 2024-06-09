@@ -1,7 +1,4 @@
-﻿using System;
-using Autodesk.AutoCAD.Geometry;
-
-namespace Gile.AutoCAD.R25.Geometry
+﻿namespace Gile.AutoCAD.Geometry
 {
     /// <summary>
     /// Provides extension methods for the CircularArc3d type.
@@ -16,7 +13,7 @@ namespace Gile.AutoCAD.R25.Geometry
         /// <exception cref="ArgumentNullException">ArgumentNullException is thrown if <paramref name="arc"/> is null.</exception>
         public static EllipticalArc3d GetEllipticalArc(this CircularArc3d arc)
         {
-            ArgumentNullException.ThrowIfNull(arc);
+            Assert.IsNotNull(arc, nameof(arc));
             return new EllipticalArc3d(
                 arc.Center,
                 arc.ReferenceVector,
@@ -42,14 +39,14 @@ namespace Gile.AutoCAD.R25.Geometry
         /// eNonCoplanarGeometry is thrown if the objects do not lies on the same plane.</exception>
         public static LineSegment3d[]? GetTangentsTo(this CircularArc3d arc, Point3d pt)
         {
-            ArgumentNullException.ThrowIfNull(arc);
+            Assert.IsNotNull(arc, nameof(arc));
             // check if arc and point lies on the plane
             Vector3d normal = arc.Normal;
             Matrix3d WCS2OCS = Matrix3d.WorldToPlane(normal);
             double elevation = arc.Center.TransformBy(WCS2OCS).Z;
             if (Math.Abs(elevation - pt.TransformBy(WCS2OCS).Z) < Tolerance.Global.EqualPoint)
-                throw new Autodesk.AutoCAD.Runtime.Exception(
-                    Autodesk.AutoCAD.Runtime.ErrorStatus.NonCoplanarGeometry);
+                throw new AcRx.Exception(
+                    AcRx.ErrorStatus.NonCoplanarGeometry);
 
             Plane plane = new(Point3d.Origin, normal);
             CircularArc2d ca2d = new(arc.Center.Convert2d(plane), arc.Radius);
@@ -85,16 +82,16 @@ namespace Gile.AutoCAD.R25.Geometry
         /// eNonCoplanarGeometry is thrown if the objects do not lies on the same plane.</exception>
         public static LineSegment3d[]? GetTangentsTo(this CircularArc3d arc, CircularArc3d other, TangentType flags)
         {
-            ArgumentNullException.ThrowIfNull(arc);
-            ArgumentNullException.ThrowIfNull(other);
+            Assert.IsNotNull(arc, nameof(arc));
+            Assert.IsNotNull(other, nameof(other));
             // check if circles lies on the same plane
             Vector3d normal = arc.Normal;
             Matrix3d WCS2OCS = Matrix3d.WorldToPlane(normal);
             double elevation = arc.Center.TransformBy(WCS2OCS).Z;
             if (!(normal.IsParallelTo(other.Normal) &&
                 Math.Abs(elevation - other.Center.TransformBy(WCS2OCS).Z) < Tolerance.Global.EqualPoint))
-                throw new Autodesk.AutoCAD.Runtime.Exception(
-                    Autodesk.AutoCAD.Runtime.ErrorStatus.NonCoplanarGeometry);
+                throw new AcRx.Exception(
+                    AcRx.ErrorStatus.NonCoplanarGeometry);
 
             Plane plane = new(Point3d.Origin, normal);
             CircularArc2d ca2d1 = new(arc.Center.Convert2d(plane), arc.Radius);

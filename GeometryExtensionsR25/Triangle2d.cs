@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
+﻿using System.Globalization;
 
-using Autodesk.AutoCAD.Geometry;
 
-namespace Gile.AutoCAD.R25.Geometry
+
+namespace Gile.AutoCAD.Geometry
 {
     /// <summary>
     /// Describes a triangle within a plane. It can be seen as a structure of three Point2d.
@@ -30,7 +28,7 @@ namespace Gile.AutoCAD.R25.Geometry
         /// <exception cref="ArgumentOutOfRangeException">ArgumentOutOfRangeException is thrown if <paramref name="points"/> length is different from 3.</exception>
         public Triangle2d(Point2d[] points)
         {
-            ArgumentNullException.ThrowIfNull(points);
+            Assert.IsNotNull(points, nameof(points));
             if (points.Length != 3)
                 throw new ArgumentOutOfRangeException(nameof(points), "Needs 3 points.");
 
@@ -148,7 +146,7 @@ namespace Gile.AutoCAD.R25.Geometry
         /// <exception cref="System.ArgumentNullException">ArgumentException is thrown if <paramref name="plane"/> is null.</exception>
         public Triangle3d Convert3d(Plane plane)
         {
-            ArgumentNullException.ThrowIfNull(plane);
+            Assert.IsNotNull(plane, nameof(plane));
             return new Triangle3d(Array.ConvertAll(points, x => x.Convert3d(plane)));
         }
 
@@ -207,7 +205,7 @@ namespace Gile.AutoCAD.R25.Geometry
         /// <exception cref="System.ArgumentNullException">ArgumentException is thrown if <paramref name="line2d"/> is null.</exception>
         public List<Point2d> IntersectWith(LinearEntity2d line2d, Tolerance tol)
         {
-            ArgumentNullException.ThrowIfNull(line2d);
+            Assert.IsNotNull(line2d, nameof(line2d));
             List<Point2d> result = [];
             for (int i = 0; i < 3; i++)
             {

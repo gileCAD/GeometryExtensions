@@ -3,34 +3,36 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.8.34511.84
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GeometryExtensionsR25", "GeometryExtensionsR25\GeometryExtensionsR25.csproj", "{C2608FC8-352C-4615-9CB2-36CA728B20F8}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GeometryExtensionsR19", "GeometryExtensionsR19\GeometryExtensionsR19.csproj", "{42A09595-33B7-4806-ABFF-FCBBC2BB29A8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GeometryExtensions", "GeometryExtensionsR25\GeometryExtensions.csproj", "{C2608FC8-352C-4615-9CB2-36CA728B20F8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Debug|Any CPU = Debug|Any CPU
+		AutoCAD_Debug|x64 = AutoCAD_Debug|x64
+		AutoCAD_Release|x64 = AutoCAD_Release|x64
+		AutoCAD25_Debug|x64 = AutoCAD25_Debug|x64
+		AutoCAD25_Release|x64 = AutoCAD25_Release|x64
+		BricsCAD_Debug|x64 = BricsCAD_Debug|x64
+		BricsCAD_Release|x64 = BricsCAD_Release|x64
 		Debug|x64 = Debug|x64
-		Release|Any CPU = Release|Any CPU
 		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{C2608FC8-352C-4615-9CB2-36CA728B20F8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C2608FC8-352C-4615-9CB2-36CA728B20F8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C2608FC8-352C-4615-9CB2-36CA728B20F8}.AutoCAD_Debug|x64.ActiveCfg = AutoCAD_Debug|x64
+		{C2608FC8-352C-4615-9CB2-36CA728B20F8}.AutoCAD_Debug|x64.Build.0 = AutoCAD_Debug|x64
+		{C2608FC8-352C-4615-9CB2-36CA728B20F8}.AutoCAD_Release|x64.ActiveCfg = AutoCAD_Release|x64
+		{C2608FC8-352C-4615-9CB2-36CA728B20F8}.AutoCAD_Release|x64.Build.0 = AutoCAD_Release|x64
+		{C2608FC8-352C-4615-9CB2-36CA728B20F8}.AutoCAD25_Debug|x64.ActiveCfg = AutoCAD25_Debug|x64
+		{C2608FC8-352C-4615-9CB2-36CA728B20F8}.AutoCAD25_Debug|x64.Build.0 = AutoCAD25_Debug|x64
+		{C2608FC8-352C-4615-9CB2-36CA728B20F8}.AutoCAD25_Release|x64.ActiveCfg = AutoCAD25_Release|x64
+		{C2608FC8-352C-4615-9CB2-36CA728B20F8}.AutoCAD25_Release|x64.Build.0 = AutoCAD25_Release|x64
+		{C2608FC8-352C-4615-9CB2-36CA728B20F8}.BricsCAD_Debug|x64.ActiveCfg = BricsCAD_Debug|x64
+		{C2608FC8-352C-4615-9CB2-36CA728B20F8}.BricsCAD_Debug|x64.Build.0 = BricsCAD_Debug|x64
+		{C2608FC8-352C-4615-9CB2-36CA728B20F8}.BricsCAD_Release|x64.ActiveCfg = BricsCAD_Release|x64
+		{C2608FC8-352C-4615-9CB2-36CA728B20F8}.BricsCAD_Release|x64.Build.0 = BricsCAD_Release|x64
 		{C2608FC8-352C-4615-9CB2-36CA728B20F8}.Debug|x64.ActiveCfg = Debug|x64
 		{C2608FC8-352C-4615-9CB2-36CA728B20F8}.Debug|x64.Build.0 = Debug|x64
-		{C2608FC8-352C-4615-9CB2-36CA728B20F8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C2608FC8-352C-4615-9CB2-36CA728B20F8}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C2608FC8-352C-4615-9CB2-36CA728B20F8}.Release|x64.ActiveCfg = Release|x64
 		{C2608FC8-352C-4615-9CB2-36CA728B20F8}.Release|x64.Build.0 = Release|x64
-		{42A09595-33B7-4806-ABFF-FCBBC2BB29A8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{42A09595-33B7-4806-ABFF-FCBBC2BB29A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{42A09595-33B7-4806-ABFF-FCBBC2BB29A8}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{42A09595-33B7-4806-ABFF-FCBBC2BB29A8}.Debug|x64.Build.0 = Debug|Any CPU
-		{42A09595-33B7-4806-ABFF-FCBBC2BB29A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{42A09595-33B7-4806-ABFF-FCBBC2BB29A8}.Release|Any CPU.Build.0 = Release|Any CPU
-		{42A09595-33B7-4806-ABFF-FCBBC2BB29A8}.Release|x64.ActiveCfg = Release|Any CPU
-		{42A09595-33B7-4806-ABFF-FCBBC2BB29A8}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
