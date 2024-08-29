@@ -170,7 +170,7 @@ namespace Gile.AutoCAD.R25.Geometry
                 bestDist = dist;
             }
             dist = coordCen - coordCur;
-            if (bestDist < dist * dist)
+            if (bestDist < dist )
             {
                 currentBest = GetNeighbour(
                     center, coordCen < coordCur ? node.LeftChild : node.RightChild, currentBest, bestDist);

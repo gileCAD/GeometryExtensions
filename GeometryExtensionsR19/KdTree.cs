@@ -183,7 +183,7 @@ namespace Gile.AutoCAD.R19.Geometry
                 bestDist = dist;
             }
             dist = coordCen - coordCur;
-            if (bestDist < dist * dist)
+            if (bestDist < dist )
             {
                 if (coordCen < coordCur)
                 {
