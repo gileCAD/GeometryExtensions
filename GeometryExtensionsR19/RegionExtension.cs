@@ -47,9 +47,10 @@ namespace Gile.AutoCAD.R19.Geometry
         /// Gets the curves constituting the boundaries of the region.
         /// </summary>
         /// <param name="region">The instance to which this method applies.</param>
+        /// <param name="tolerance">Tolerance used in curve end points comparison.</param>
         /// <returns>Curve collection.</returns>
         /// <exception cref="System.ArgumentNullException">ArgumentException is thrown if <paramref name="region"/> is null.</exception>
-        public static IEnumerable<Curve> GetCurves(this Region region)
+        public static IEnumerable<Curve> GetCurves(this Region region, Tolerance tolerance)
         {
             Assert.IsNotNull(region, nameof(region));
             using (var brep = new Brep(region))
@@ -62,7 +63,7 @@ namespace Gile.AutoCAD.R19.Geometry
                     {
                         if (curves3d.All(curve3d => curve3d is CircularArc3d || curve3d is LineSegment3d))
                         {
-                            var pline = (Polyline)Curve.CreateFromGeCurve(new CompositeCurve3d(curves3d.ToOrderedArray()));
+                            var pline = (Polyline)Curve.CreateFromGeCurve(new CompositeCurve3d(curves3d.ToOrderedArray(tolerance)));
                             pline.Closed = true;
                             yield return pline;
                         }
@@ -83,12 +84,23 @@ namespace Gile.AutoCAD.R19.Geometry
         }
 
         /// <summary>
+        /// Gets the curves constituting the boundaries of the region.
+        /// Calls GetCurves with Tolerance.Global.
+        /// </summary>
+        /// <param name="region">The instance to which this method applies.</param>
+        /// <returns>Curve collection.</returns>
+        /// <exception cref="System.ArgumentNullException">ArgumentException is thrown if <paramref name="region"/> is null.</exception>
+        public static IEnumerable<Curve> GetCurves(this Region region) =>
+            region.GetCurves(Tolerance.Global);
+
+        /// <summary>
         /// Gets the hatch loops data for the supplied region.
         /// </summary>
         /// <param name="region">The instance to which this method applies.</param>
+        /// <param name="tolerance">Tolerance used in curve end points comparison.</param>
         /// <returns>A collection of tuples containing the loop data.</returns>
         /// <exception cref="System.ArgumentNullException">ArgumentException is thrown if <paramref name="region"/> is null.</exception>
-        public static IEnumerable<(HatchLoopTypes, Curve2dCollection, IntegerCollection)> GetHatchLoops(this Region region)
+        public static IEnumerable<(HatchLoopTypes, Curve2dCollection, IntegerCollection)> GetHatchLoops(this Region region, Tolerance tolerance)
         {
             Assert.IsNotNull(region, nameof(region));
             var plane = new Plane(Point3d.Origin, region.Normal);
@@ -101,7 +113,7 @@ namespace Gile.AutoCAD.R19.Geometry
                     {
                         var edgePtrCollection = new Curve2dCollection();
                         var edgeTypeCollection = new IntegerCollection();
-                        foreach (var edge in loop.Edges.Select(e => ((ExternalCurve3d)e.Curve).NativeCurve).ToOrderedArray())
+                        foreach (var edge in loop.Edges.Select(e => ((ExternalCurve3d)e.Curve).NativeCurve).ToOrderedArray(tolerance))
                         {
                             switch (edge)
                             {
@@ -161,6 +173,16 @@ namespace Gile.AutoCAD.R19.Geometry
                 }
             }
         }
+
+        /// <summary>
+        /// Gets the hatch loops data for the supplied region.
+        /// Calls GetHatchLoops with Tolerance.Global.
+        /// </summary>
+        /// <param name="region">The instance to which this method applies.</param>
+        /// <returns>A collection of tuples containing the loop data.</returns>
+        /// <exception cref="System.ArgumentNullException">ArgumentException is thrown if <paramref name="region"/> is null.</exception>
+        public static IEnumerable<(HatchLoopTypes, Curve2dCollection, IntegerCollection)> GetHatchLoops(this Region region) =>
+            region.GetHatchLoops(Tolerance.Global);
 
         /// <summary>
         /// Gets the PointContainment of the region for the supplied point. 
