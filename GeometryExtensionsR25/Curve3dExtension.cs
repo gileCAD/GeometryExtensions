@@ -49,9 +49,7 @@ namespace Gile.AutoCAD.R25.Geometry
         /// <param name="source">Collection this method applies to.</param>
         /// <returns>Ordered array of Curve3d.</returns>
         /// <exception cref="ArgumentNullException">ArgumentNullException is thrown if <paramref name="source"/> is null.</exception>
-        public static Curve3d[] ToOrderedArray(this IEnumerable<Curve3d> source)
-        {
-            return source.ToOrderedArray(Tolerance.Global);
-        }
+        public static Curve3d[] ToOrderedArray(this IEnumerable<Curve3d> source) =>
+            source.ToOrderedArray(Tolerance.Global);
     }
 }
