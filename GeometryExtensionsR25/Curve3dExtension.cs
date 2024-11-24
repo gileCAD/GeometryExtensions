@@ -15,9 +15,10 @@ namespace Gile.AutoCAD.R25.Geometry
         /// Order the collection by contiguous curves ([n].EndPoint equals to [n+1].StartPoint)
         /// </summary>
         /// <param name="source">Collection this method applies to.</param>
+        /// <param name="tolerance">Tolerance used to compare end points.</param>
         /// <returns>Ordered array of Curve3d.</returns>
         /// <exception cref="ArgumentNullException">ArgumentNullException is thrown if <paramref name="source"/> is null.</exception>
-        public static Curve3d[] ToOrderedArray(this IEnumerable<Curve3d> source)
+        public static Curve3d[] ToOrderedArray(this IEnumerable<Curve3d> source, Tolerance tolerance)
         {
             ArgumentNullException.ThrowIfNull(source);
             var list = source.ToList();
@@ -30,15 +31,27 @@ namespace Gile.AutoCAD.R25.Geometry
             while (i < count - 1)
             {
                 var pt = array[i++].EndPoint;
-                if ((index = list.FindIndex(c => c.StartPoint.IsEqualTo(pt))) != -1)
+                if ((index = list.FindIndex(c => c.StartPoint.IsEqualTo(pt, tolerance))) != -1)
                     array[i] = list[index];
-                else if ((index = list.FindIndex(c => c.EndPoint.IsEqualTo(pt))) != -1)
+                else if ((index = list.FindIndex(c => c.EndPoint.IsEqualTo(pt, tolerance))) != -1)
                     array[i] = list[index].GetReverseParameterCurve();
                 else
                     throw new ArgumentException("Not contiguous curves.");
                 list.RemoveAt(index);
             }
             return array;
+        }
+
+        /// <summary>
+        /// Order the collection by contiguous curves ([n].EndPoint equals to [n+1].StartPoint).
+        /// Calls ToOrderedArray with Tolerance.Global.
+        /// </summary>
+        /// <param name="source">Collection this method applies to.</param>
+        /// <returns>Ordered array of Curve3d.</returns>
+        /// <exception cref="ArgumentNullException">ArgumentNullException is thrown if <paramref name="source"/> is null.</exception>
+        public static Curve3d[] ToOrderedArray(this IEnumerable<Curve3d> source)
+        {
+            return source.ToOrderedArray(Tolerance.Global);
         }
     }
 }

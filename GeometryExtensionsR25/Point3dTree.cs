@@ -17,7 +17,7 @@ namespace Gile.AutoCAD.R25.Geometry
     /// <param name="ignoreZ">A value indicating if the Z coordinate of points is ignored 
     /// (as if all points were projected to the XY plane).</param>
     /// <exception cref="System.ArgumentNullException">ArgumentException is thrown if <paramref name="points"/> is null.</exception>
-    public class Point3dTree(IEnumerable<Point3d> points, bool ignoreZ = false) : KdTree<Point3d>(points, (pt) => pt, ignoreZ ? 2 : 3)
+    public class Point3dTree(IEnumerable<Point3d> points, bool ignoreZ = false) : KdTree<Point3d>(points, pt => pt, ignoreZ ? 2 : 3)
     {
     }
 }

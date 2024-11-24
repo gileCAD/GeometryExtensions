@@ -20,7 +20,7 @@ namespace Gile.AutoCAD.R19.Geometry
         /// (as if all points were projected to the XY plane).</param>
         /// <exception cref="System.ArgumentNullException">ArgumentException is thrown if <paramref name="points"/> is null.</exception>
         public Point3dTree(IEnumerable<Point3d> points, bool ignoreZ = false)
-            : base(points, (pt) => pt, ignoreZ ? 2 : 3)
+            : base(points, pt => pt, ignoreZ ? 2 : 3)
         { }
     }
 }
