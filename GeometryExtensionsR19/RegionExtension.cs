@@ -125,20 +125,18 @@ namespace Gile.AutoCAD.R19.Geometry
                                     edgeTypeCollection.Add(1);
                                     break;
                                 case CircularArc3d circularArc3D:
-                                    var majAxis = circularArc3D.ReferenceVector.Convert2d(plane);
-                                    var minAxis = region.Normal.IsEqualTo(circularArc3D.Normal) ?
-                                        majAxis.GetPerpendicularVector() :
-                                        majAxis.GetPerpendicularVector().Negate();
+                                    bool isClockwise = circularArc3D.Normal.IsEqualTo(region.Normal.Negate());
+                                    double angle = circularArc3D.ReferenceVector.Convert2d(plane).Angle;
+                                    if (isClockwise) angle = -angle;
                                     edgePtrCollection.Add(
-                                        new EllipticalArc2d(
+                                        new CircularArc2d(
                                             circularArc3D.Center.Convert2d(plane),
-                                            majAxis,
-                                            minAxis,
                                             circularArc3D.Radius,
-                                            circularArc3D.Radius,
-                                            circularArc3D.StartAngle,
-                                            circularArc3D.EndAngle));
-                                    edgeTypeCollection.Add(3);
+                                            circularArc3D.StartAngle + angle,
+                                            circularArc3D.EndAngle + angle,
+                                            Vector2d.XAxis,
+                                            isClockwise));
+                                    edgeTypeCollection.Add(2);
                                     break;
                                 case EllipticalArc3d ellipticalArc3D:
                                     edgePtrCollection.Add(
