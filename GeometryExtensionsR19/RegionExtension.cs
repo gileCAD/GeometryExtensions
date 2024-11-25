@@ -125,15 +125,20 @@ namespace Gile.AutoCAD.R19.Geometry
                                     edgeTypeCollection.Add(1);
                                     break;
                                 case CircularArc3d circularArc3D:
+                                    var majAxis = circularArc3D.ReferenceVector.Convert2d(plane);
+                                    var minAxis = region.Normal.IsEqualTo(circularArc3D.Normal) ?
+                                        majAxis.GetPerpendicularVector() :
+                                        majAxis.GetPerpendicularVector().Negate();
                                     edgePtrCollection.Add(
-                                        new CircularArc2d(
+                                        new EllipticalArc2d(
                                             circularArc3D.Center.Convert2d(plane),
+                                            majAxis,
+                                            minAxis,
+                                            circularArc3D.Radius,
                                             circularArc3D.Radius,
                                             circularArc3D.StartAngle,
-                                            circularArc3D.EndAngle,
-                                            circularArc3D.ReferenceVector.Convert2d(plane),
-                                            false));
-                                    edgeTypeCollection.Add(2);
+                                            circularArc3D.EndAngle));
+                                    edgeTypeCollection.Add(3);
                                     break;
                                 case EllipticalArc3d ellipticalArc3D:
                                     edgePtrCollection.Add(
