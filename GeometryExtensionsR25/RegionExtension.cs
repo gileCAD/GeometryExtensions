@@ -2,6 +2,7 @@
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -104,6 +105,13 @@ namespace Gile.AutoCAD.R25.Geometry
             System.ArgumentNullException.ThrowIfNull(region);
             var plane = new Plane(Point3d.Origin, region.Normal);
 
+            double twoPI = Math.PI * 2.0;
+
+            double Standardise(double angle) =>
+                angle < 0 ? angle + twoPI :
+                twoPI < angle ? angle - twoPI :
+                angle;
+
             using var brep = new Brep(region);
             foreach (var complex in brep.Complexes)
             {
@@ -123,17 +131,28 @@ namespace Gile.AutoCAD.R25.Geometry
                                 edgeTypeCollection.Add(1);
                                 break;
                             case CircularArc3d circularArc3D:
-                                bool isClockwise = circularArc3D.Normal.IsEqualTo(region.Normal.Negate());
-                                double angle = circularArc3D.ReferenceVector.Convert2d(plane).Angle;
-                                if (isClockwise) angle = -angle;
-                                edgePtrCollection.Add(
-                                    new CircularArc2d(
-                                        circularArc3D.Center.Convert2d(plane),
-                                        circularArc3D.Radius,
-                                        circularArc3D.StartAngle + angle,
-                                        circularArc3D.EndAngle + angle,
-                                        Vector2d.XAxis,
-                                        isClockwise));
+                                if (circularArc3D.EndAngle - circularArc3D.StartAngle == twoPI)
+                                {
+                                    edgePtrCollection.Add(
+                                        new CircularArc2d(
+                                            circularArc3D.Center.Convert2d(plane),
+                                            circularArc3D.Radius));
+                                }
+                                else
+                                {
+                                    bool isClockwise = circularArc3D.Normal.IsEqualTo(region.Normal.Negate());
+                                    double angle = isClockwise ?
+                                        -circularArc3D.ReferenceVector.Convert2d(plane).Angle :
+                                        circularArc3D.ReferenceVector.Convert2d(plane).Angle;
+                                    edgePtrCollection.Add(
+                                        new CircularArc2d(
+                                            circularArc3D.Center.Convert2d(plane),
+                                            circularArc3D.Radius,
+                                            Standardise(circularArc3D.StartAngle + angle),
+                                            Standardise(circularArc3D.EndAngle + angle),
+                                            Vector2d.XAxis,
+                                            isClockwise));
+                                }
                                 edgeTypeCollection.Add(2);
                                 break;
                             case EllipticalArc3d ellipticalArc3D:
