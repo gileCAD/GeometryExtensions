@@ -2,9 +2,10 @@
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
+
+using static System.Math;
 
 namespace Gile.AutoCAD.R25.Geometry
 {
@@ -94,6 +95,52 @@ namespace Gile.AutoCAD.R25.Geometry
             region.GetCurves(Tolerance.Global);
 
         /// <summary>
+        /// Gets the curves constituting the boundaries of the region by loop.
+        /// </summary>
+        /// <param name="region">The instance to which this method applies.</param>
+        /// <param name="tolerance">Tolerance used to compare end points.</param>
+        /// <returns>A sequence containing one tuple (LoopType, Curve[]) for each loop.</returns>
+        /// <exception cref="System.ArgumentNullException">ArgumentException is thrown if <paramref name="region"/> is null.</exception>
+        public static IEnumerable<(LoopType, Curve[])> GetCurvesByLoop(this Region region, Tolerance tolerance)
+        {
+            System.ArgumentNullException.ThrowIfNull(region);
+            using var brep = new Brep(region);
+            foreach (var complex in brep.Complexes)
+            {
+                foreach (var loop in complex.Shells.First().Faces.First().Loops)
+                {
+                    var curves3d = loop.Edges.Select(edge => ((ExternalCurve3d)edge.Curve).NativeCurve);
+                    if (1 < curves3d.Count())
+                    {
+                        if (curves3d.All(curve3d => curve3d is CircularArc3d || curve3d is LineSegment3d))
+                        {
+                            var pline = (Polyline)Curve.CreateFromGeCurve(new CompositeCurve3d(curves3d.ToOrderedArray(tolerance)));
+                            yield return (loop.LoopType, [pline]);
+                        }
+                        else
+                        {
+                            yield return (loop.LoopType, curves3d.Select(c => Curve.CreateFromGeCurve(c)).ToArray());
+                        }
+                    }
+                    else
+                    {
+                        yield return (loop.LoopType, [Curve.CreateFromGeCurve(curves3d.First())]);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets the curves constituting the boundaries of the region by loop.
+        /// Calls GetCurvesByLoop with Tolerance.Global.
+        /// </summary>
+        /// <param name="region">The instance to which this method applies.</param>
+        /// <returns>A sequence containing one tuple (LoopType, Curve[]) for each loop.</returns>
+        /// <exception cref="System.ArgumentNullException">ArgumentException is thrown if <paramref name="region"/> is null.</exception>
+        public static IEnumerable<(LoopType, Curve[])> GetCurvesByLoop(this Region region) =>
+            region.GetCurvesByLoop(Tolerance.Global);
+
+        /// <summary>
         /// Gets the hatch loops data for the supplied region.
         /// </summary>
         /// <param name="region">The instance to which this method applies.</param>
@@ -105,7 +152,7 @@ namespace Gile.AutoCAD.R25.Geometry
             System.ArgumentNullException.ThrowIfNull(region);
             var plane = new Plane(Point3d.Origin, region.Normal);
 
-            double twoPI = Math.PI * 2.0;
+            double twoPI = PI * 2.0;
 
             double Standardise(double angle) =>
                 angle < 0 ? angle + twoPI :
