@@ -57,29 +57,24 @@ namespace Gile.AutoCAD.R25.Geometry
         {
             System.ArgumentNullException.ThrowIfNull(region);
             using var brep = new Brep(region);
-            var loops = brep.Faces.SelectMany(face => face.Loops);
-            foreach (var loop in loops)
+            foreach (var loop in brep.Faces.SelectMany(face => face.Loops))
             {
                 var curves3d = loop.Edges.Select(edge => ((ExternalCurve3d)edge.Curve).NativeCurve);
-                if (1 < curves3d.Count())
+                if (curves3d.Count() == 1)
                 {
-                    if (curves3d.All(curve3d => curve3d is CircularArc3d || curve3d is LineSegment3d))
-                    {
-                        var pline = (Polyline)Curve.CreateFromGeCurve(new CompositeCurve3d(curves3d.ToOrderedArray(tolerance)));
-                        pline.Closed = true;
-                        yield return pline;
-                    }
-                    else
-                    {
-                        foreach (Curve3d curve3d in curves3d)
-                        {
-                            yield return Curve.CreateFromGeCurve(curve3d);
-                        }
-                    }
+                    yield return Curve.CreateFromGeCurve(curves3d.First());
+                }
+                else if (curves3d.All(curve3d => curve3d is CircularArc3d || curve3d is LineSegment3d))
+                {
+                    var pline = (Polyline)Curve.CreateFromGeCurve(new CompositeCurve3d(curves3d.ToOrderedArray(tolerance)));
+                    yield return pline;
                 }
                 else
                 {
-                    yield return Curve.CreateFromGeCurve(curves3d.First());
+                    foreach (Curve3d curve3d in curves3d)
+                    {
+                        yield return Curve.CreateFromGeCurve(curve3d);
+                    }
                 }
             }
         }
@@ -105,27 +100,21 @@ namespace Gile.AutoCAD.R25.Geometry
         {
             System.ArgumentNullException.ThrowIfNull(region);
             using var brep = new Brep(region);
-            foreach (var complex in brep.Complexes)
+            foreach (var loop in brep.Faces.SelectMany(f => f.Loops))
             {
-                foreach (var loop in complex.Shells.First().Faces.First().Loops)
+                var curves3d = loop.Edges.Select(edge => ((ExternalCurve3d)edge.Curve).NativeCurve);
+                if (curves3d.Count() == 1)
                 {
-                    var curves3d = loop.Edges.Select(edge => ((ExternalCurve3d)edge.Curve).NativeCurve);
-                    if (1 < curves3d.Count())
-                    {
-                        if (curves3d.All(curve3d => curve3d is CircularArc3d || curve3d is LineSegment3d))
-                        {
-                            var pline = (Polyline)Curve.CreateFromGeCurve(new CompositeCurve3d(curves3d.ToOrderedArray(tolerance)));
-                            yield return (loop.LoopType, [pline]);
-                        }
-                        else
-                        {
-                            yield return (loop.LoopType, curves3d.Select(c => Curve.CreateFromGeCurve(c)).ToArray());
-                        }
-                    }
-                    else
-                    {
-                        yield return (loop.LoopType, [Curve.CreateFromGeCurve(curves3d.First())]);
-                    }
+                    yield return (loop.LoopType, [Curve.CreateFromGeCurve(curves3d.First())]);
+                }
+                else if (curves3d.All(curve3d => curve3d is CircularArc3d || curve3d is LineSegment3d))
+                {
+                    var pline = (Polyline)Curve.CreateFromGeCurve(new CompositeCurve3d(curves3d.ToOrderedArray(tolerance)));
+                    yield return (loop.LoopType, [pline]);
+                }
+                else
+                {
+                    yield return (loop.LoopType, curves3d.Select(c => Curve.CreateFromGeCurve(c)).ToArray());
                 }
             }
         }
