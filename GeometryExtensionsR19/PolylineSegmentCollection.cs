@@ -323,59 +323,72 @@ namespace Gile.AutoCAD.R19.Geometry
         /// <returns>A list of instances of PolylineSegmentCollection.</returns>
         public List<PolylineSegmentCollection> Join(Tolerance tol)
         {
-            List<PolylineSegmentCollection> result = new List<PolylineSegmentCollection>();
-            PolylineSegmentCollection clone = new PolylineSegmentCollection(this);
-            while (clone.Count > 0)
+            if (Count < 2)
+                return new List<PolylineSegmentCollection> { this };
+
+            var result = new List<PolylineSegmentCollection>();
+            var done = new bool[Count];
+            int first = 0;
+
+            while (-1 < first)
             {
-                PolylineSegmentCollection newCol = new PolylineSegmentCollection();
-                PolylineSegment seg = clone[0];
-                newCol.Add(seg);
-                Point2d start = seg.StartPoint;
-                Point2d end = seg.EndPoint;
-                clone.RemoveAt(0);
-                while (true)
+                var current = this[first];
+                var newCol = new PolylineSegmentCollection { current };
+                var startPoint = current.StartPoint;
+                var endPoint = current.EndPoint;
+
+                bool found = done[first] = true;
+                while (found)
                 {
-                    int i = clone.FindIndex(s => s.StartPoint.IsEqualTo(end, tol));
-                    if (i >= 0)
+                    found = false;
+                    for (int i = 0; i < Count; i++)
                     {
-                        seg = clone[i];
-                        newCol.Add(seg);
-                        end = seg.EndPoint;
-                        clone.RemoveAt(i);
-                        continue;
+                        if (done[i])
+                            continue;
+
+                        current = this[i];
+
+                        if (current.StartPoint.IsEqualTo(endPoint, tol))
+                        {
+                            newCol.Add(current);
+                            endPoint = current.EndPoint;
+                            found = done[i] = true;
+                            break;
+                        }
+                        if (current.EndPoint.IsEqualTo(endPoint, tol))
+                        {
+                            newCol.Add(current.Reversed);
+                            endPoint = current.StartPoint;
+                            found = done[i] = true;
+                            break;
+                        }
+                        if (current.EndPoint.IsEqualTo(startPoint, tol))
+                        {
+                            newCol.Insert(0, current);
+                            startPoint = current.StartPoint;
+                            found = done[i] = true;
+                            break;
+                        }
+                        if (current.StartPoint.IsEqualTo(startPoint, tol))
+                        {
+                            newCol.Insert(0, current.Reversed);
+                            startPoint = current.EndPoint;
+                            found = done[i] = true;
+                            break;
+                        }
                     }
-                    i = clone.FindIndex(s => s.EndPoint.IsEqualTo(end, tol));
-                    if (i >= 0)
-                    {
-                        seg = clone[i];
-                        seg.Inverse();
-                        newCol.Add(seg);
-                        end = seg.EndPoint;
-                        clone.RemoveAt(i);
-                        continue;
-                    }
-                    i = clone.FindIndex(s => s.EndPoint.IsEqualTo(start, tol));
-                    if (i >= 0)
-                    {
-                        seg = clone[i];
-                        newCol.Insert(0, seg);
-                        start = seg.StartPoint;
-                        clone.RemoveAt(i);
-                        continue;
-                    }
-                    i = clone.FindIndex(s => s.StartPoint.IsEqualTo(start, tol));
-                    if (i >= 0)
-                    {
-                        seg = clone[i];
-                        seg.Inverse();
-                        newCol.Insert(0, seg);
-                        start = seg.StartPoint;
-                        clone.RemoveAt(i);
-                        continue;
-                    }
-                    break;
                 }
                 result.Add(newCol);
+
+                first = -1;
+                for (int i = 0; i < Count; i++)
+                {
+                    if (!done[i])
+                    {
+                        first = i;
+                        break;
+                    }
+                }
             }
             return result;
         }
