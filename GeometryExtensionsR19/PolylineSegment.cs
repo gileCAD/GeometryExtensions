@@ -29,7 +29,7 @@ namespace Gile.AutoCAD.R19.Geometry
         /// <summary>
         /// Gets or sets the start width of the segment.
         /// </summary>
-        public double StartWidth { get; set;}
+        public double StartWidth { get; set; }
 
         /// <summary>
         /// Gets or sets the end width of the segment.
@@ -40,6 +40,12 @@ namespace Gile.AutoCAD.R19.Geometry
         /// Gets a value indicating if the segment is linear.
         /// </summary>
         public bool IsLinear => Bulge == 0.0;
+
+        /// <summary>
+        /// Gets the reversed segment.
+        /// </summary>
+        public PolylineSegment Reversed =>
+            new PolylineSegment(EndPoint, StartPoint, -Bulge, EndWidth, StartWidth);
 
         #endregion
 
@@ -52,7 +58,7 @@ namespace Gile.AutoCAD.R19.Geometry
         /// <param name="endPoint">End point of the segment.</param>
         /// <param name="bulge">Bulge of the segment (default 0.0).</param>
         /// <param name="constantWidth">Constant width of the segment (default 0.0).</param>
-        public PolylineSegment(Point2d startPoint, Point2d endPoint, double bulge = 0.0, double constantWidth = 0.0) 
+        public PolylineSegment(Point2d startPoint, Point2d endPoint, double bulge = 0.0, double constantWidth = 0.0)
             : this(startPoint, endPoint, bulge, constantWidth, constantWidth)
         { }
 
@@ -149,14 +155,14 @@ namespace Gile.AutoCAD.R19.Geometry
         /// Converts the linear segment into an instance of Line2dSegment.
         /// </summary>
         /// <returns>A new instance of LineSegment2d or null if the segment is not linear.</returns>
-        public LineSegment2d ToLineSegment() => 
+        public LineSegment2d ToLineSegment() =>
             IsLinear ? new LineSegment2d(StartPoint, EndPoint) : null;
 
         /// <summary>
         /// Converts the circular arc segment into an instance of CircularArc2d.
         /// </summary>
         /// <returns>A new instance of CircularArc2d or null if the segment is linear.</returns>
-        public CircularArc2d ToCircularArc() => 
+        public CircularArc2d ToCircularArc() =>
             IsLinear ? null : new CircularArc2d(StartPoint, EndPoint, Bulge, false);
 
         /// <summary>

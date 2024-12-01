@@ -41,6 +41,12 @@ namespace Gile.AutoCAD.R25.Geometry
         /// </summary>
         public bool IsLinear => Bulge == 0.0;
 
+        /// <summary>
+        /// Gets the reversed segment.
+        /// </summary>
+        public PolylineSegment Reversed =>
+            new PolylineSegment(EndPoint, StartPoint, -Bulge, EndWidth, StartWidth);
+
         #endregion
 
         #region Constructors
