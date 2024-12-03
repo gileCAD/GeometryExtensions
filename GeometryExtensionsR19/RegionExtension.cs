@@ -1,7 +1,6 @@
 ﻿using Autodesk.AutoCAD.BoundaryRepresentation;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
-
 using System.Collections.Generic;
 using System.Linq;
 
@@ -23,7 +22,7 @@ namespace Gile.AutoCAD.R19.Geometry
         public static Point3d Centroid(this Region region)
         {
             Assert.IsNotNull(region, nameof(region));
-            var plane = region.GetPlane();
+            var plane = GetPlane(region);
             var coordinateSystem = plane.GetCoordinateSystem();
             var origin = coordinateSystem.Origin;
             var xAxis = coordinateSystem.Xaxis;
@@ -34,6 +33,17 @@ namespace Gile.AutoCAD.R19.Geometry
                 .Convert3d(plane);
         }
 
+        private static Plane GetPlane(Region region)
+        {
+            var dbObjColl = new DBObjectCollection();
+            region.Explode(dbObjColl);
+            if (dbObjColl.Count == 0)
+                return null;
+
+            var regionCurve = dbObjColl[0] as Curve;
+            return regionCurve.GetPlane();
+        }
+
         /// <summary>
         /// Gets the distance of the Region's plane from the WCS origin.
         /// </summary>
@@ -42,7 +52,7 @@ namespace Gile.AutoCAD.R19.Geometry
         /// <exception cref="System.ArgumentNullException">ArgumentException is thrown if <paramref name="region"/> is null.</exception>
         public static double Elevation(this Region region)
         {
-            return region.GetPlane().PointOnPlane.TransformBy(Matrix3d.WorldToPlane(region.Normal)).Z;
+            return GetPlane(region).PointOnPlane.TransformBy(Matrix3d.WorldToPlane(region.Normal)).Z;
         }
 
         /// <summary>
