@@ -5,7 +5,7 @@ VisualStudioVersion = 17.8.34511.84
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GeometryExtensionsR25", "GeometryExtensionsR25\GeometryExtensionsR25.csproj", "{C2608FC8-352C-4615-9CB2-36CA728B20F8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GeometryExtensionsR19", "GeometryExtensionsR19\GeometryExtensionsR19.csproj", "{42A09595-33B7-4806-ABFF-FCBBC2BB29A8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GeometryExtensionsR20", "GeometryExtensionsR20\GeometryExtensionsR20.csproj", "{42A09595-33B7-4806-ABFF-FCBBC2BB29A8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
