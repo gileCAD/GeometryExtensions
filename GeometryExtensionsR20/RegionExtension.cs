@@ -23,15 +23,20 @@ namespace Gile.AutoCAD.R20.Geometry
         public static Point3d Centroid(this Region region)
         {
             Assert.IsNotNull(region, nameof(region));
-            var plane = region.GetPlane();
-            var coordinateSystem = plane.GetCoordinateSystem();
-            var origin = coordinateSystem.Origin;
-            var xAxis = coordinateSystem.Xaxis;
-            var yAxis = coordinateSystem.Yaxis;
-            return region
-                .AreaProperties(ref origin, ref xAxis, ref yAxis)
-                .Centroid
-                .Convert3d(plane);
+
+            using (var brep = new Brep(region))
+            {
+                var face = brep.Faces.First();
+                var plane = (Plane)((ExternalBoundedSurface)face.Surface).BaseSurface;
+                var coordinateSystem = plane.GetCoordinateSystem();
+                var origin = coordinateSystem.Origin;
+                var xAxis = coordinateSystem.Xaxis;
+                var yAxis = coordinateSystem.Yaxis;
+                return region
+                    .AreaProperties(ref origin, ref xAxis, ref yAxis)
+                    .Centroid
+                    .Convert3d(plane);
+            }
         }
 
         /// <summary>
@@ -42,7 +47,12 @@ namespace Gile.AutoCAD.R20.Geometry
         /// <exception cref="System.ArgumentNullException">ArgumentException is thrown if <paramref name="region"/> is null.</exception>
         public static double Elevation(this Region region)
         {
-            return region.GetPlane().PointOnPlane.TransformBy(Matrix3d.WorldToPlane(region.Normal)).Z;
+            Assert.IsNotNull(region, nameof(region));
+
+            using (var brep = new Brep(region))
+            {
+                return brep.Vertices.First().Point.TransformBy(Matrix3d.WorldToPlane(region.Normal)).Z;
+            }
         }
 
         /// <summary>
