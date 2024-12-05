@@ -84,7 +84,7 @@ namespace Gile.AutoCAD.R20.Geometry
                             output[j] = output[j - 1];
                         }
                         output[0] = current;
-                        endPoint = current.StartPoint;
+                        startPoint = current.StartPoint;
                         found = done[i] = true;
                         break;
                     }
