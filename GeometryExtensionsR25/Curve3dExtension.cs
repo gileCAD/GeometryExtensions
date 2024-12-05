@@ -83,7 +83,7 @@ namespace Gile.AutoCAD.R25.Geometry
                             output[j] = output[j - 1];
                         }
                         output[0] = current;
-                        endPoint = current.StartPoint;
+                        startPoint = current.StartPoint;
                         found = done[i] = true;
                         break;
                     }
