@@ -27,8 +27,8 @@ namespace Gile.AutoCAD.R20.Geometry
             var input = source as Curve3d[] ?? source.ToArray();
             int length = input.Length;
             if (length < 2)
-                return input; 
-            
+                return input;
+
             if (tolerance.Equals(default(Tolerance)))
                 tolerance = Tolerance.Global;
 
@@ -39,6 +39,7 @@ namespace Gile.AutoCAD.R20.Geometry
             done[0] = true;
             int count = 1;
             var endPoint = output[0].EndPoint;
+            var startPoint = output[0].StartPoint;
 
             while (count < length)
             {
@@ -61,6 +62,28 @@ namespace Gile.AutoCAD.R20.Geometry
                     else if (endPoint.IsEqualTo(current.EndPoint, tolerance))
                     {
                         output[count] = current.GetReverseParameterCurve();
+                        endPoint = current.StartPoint;
+                        found = done[i] = true;
+                        break;
+                    }
+                    else if (startPoint.IsEqualTo(current.StartPoint, tolerance))
+                    {
+                        for (int j = count; j > 0; j--)
+                        {
+                            output[j] = output[j - 1];
+                        }
+                        output[0] = current.GetReverseParameterCurve();
+                        startPoint = current.EndPoint;
+                        found = done[i] = true;
+                        break;
+                    }
+                    else if (startPoint.IsEqualTo(current.EndPoint, tolerance))
+                    {
+                        for (int j = count; j > 0; j--)
+                        {
+                            output[j] = output[j - 1];
+                        }
+                        output[0] = current;
                         endPoint = current.StartPoint;
                         found = done[i] = true;
                         break;
