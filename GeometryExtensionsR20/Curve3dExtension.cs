@@ -2,7 +2,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 
 namespace Gile.AutoCAD.R20.Geometry
@@ -38,8 +37,8 @@ namespace Gile.AutoCAD.R20.Geometry
             output[0] = input[0];
             done[0] = true;
             int count = 1;
-            var endPoint = output[0].EndPoint;
             var startPoint = output[0].StartPoint;
+            var endPoint = output[0].EndPoint;
 
             while (count < length)
             {
@@ -66,25 +65,21 @@ namespace Gile.AutoCAD.R20.Geometry
                         found = done[i] = true;
                         break;
                     }
-                    else if (startPoint.IsEqualTo(current.StartPoint, tolerance))
-                    {
-                        for (int j = count; j > 0; j--)
-                        {
-                            output[j] = output[j - 1];
-                        }
-                        output[0] = current.GetReverseParameterCurve();
-                        startPoint = current.EndPoint;
-                        found = done[i] = true;
-                        break;
-                    }
                     else if (startPoint.IsEqualTo(current.EndPoint, tolerance))
                     {
                         for (int j = count; j > 0; j--)
-                        {
                             output[j] = output[j - 1];
-                        }
                         output[0] = current;
                         startPoint = current.StartPoint;
+                        found = done[i] = true;
+                        break;
+                    }
+                    else if (startPoint.IsEqualTo(current.StartPoint, tolerance))
+                    {
+                        for (int j = count; j > 0; j--)
+                            output[j] = output[j - 1];
+                        output[0] = current.GetReverseParameterCurve();
+                        startPoint = current.EndPoint;
                         found = done[i] = true;
                         break;
                     }
@@ -115,7 +110,7 @@ namespace Gile.AutoCAD.R20.Geometry
         {
             Assert.IsNotNull(source, nameof(source));
 
-            var isValid = predicate ?? (c => true);
+            var isValid = predicate ?? (_ => true);
 
             if (tolerance.Equals(default(Tolerance)))
                 tolerance = Tolerance.Global;
@@ -140,6 +135,7 @@ namespace Gile.AutoCAD.R20.Geometry
             output[0] = input[0];
             done[0] = true;
             int count = 1;
+            var startPoint = output[0].StartPoint;
             var endPoint = output[0].EndPoint;
 
             while (count < length)
@@ -166,6 +162,24 @@ namespace Gile.AutoCAD.R20.Geometry
                     {
                         output[count] = current.GetReverseParameterCurve();
                         endPoint = current.StartPoint;
+                        found = done[i] = true;
+                        break;
+                    }
+                    else if (startPoint.IsEqualTo(current.EndPoint, tolerance))
+                    {
+                        for (int j = count; j > 0; j--)
+                            output[j] = output[j - 1];
+                        output[0] = current;
+                        startPoint = current.StartPoint;
+                        found = done[i] = true;
+                        break;
+                    }
+                    else if (startPoint.IsEqualTo(current.StartPoint, tolerance))
+                    {
+                        for (int j = count; j > 0; j--)
+                            output[j] = output[j - 1];
+                        output[0] = current.GetReverseParameterCurve();
+                        startPoint = current.EndPoint;
                         found = done[i] = true;
                         break;
                     }
