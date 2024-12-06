@@ -124,10 +124,7 @@ namespace Gile.AutoCAD.R25.Geometry
 
             int length = input.Length;
             if (length < 2)
-            {
-                compositeCurve = new CompositeCurve3d([input[0]]);
-                return true;
-            }
+                return false;
 
             var output = new Curve3d[length];
             var done = new bool[length];
