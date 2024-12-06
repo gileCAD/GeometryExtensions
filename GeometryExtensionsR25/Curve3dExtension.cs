@@ -53,33 +53,33 @@ namespace Gile.AutoCAD.R25.Geometry
 
                     if (endPoint.IsEqualTo(current.StartPoint, tolerance))
                     {
-                        output[count] = current;
                         endPoint = current.EndPoint;
+                        output[count] = current;
                         found = done[i] = true;
                         break;
                     }
                     else if (endPoint.IsEqualTo(current.EndPoint, tolerance))
                     {
-                        output[count] = current.GetReverseParameterCurve();
                         endPoint = current.StartPoint;
+                        output[count] = current.GetReverseParameterCurve();
                         found = done[i] = true;
                         break;
                     }
                     else if (startPoint.IsEqualTo(current.EndPoint, tolerance))
                     {
+                        startPoint = current.StartPoint;
                         for (int j = count; j > 0; j--)
                             output[j] = output[j - 1];
                         output[0] = current;
-                        startPoint = current.StartPoint;
                         found = done[i] = true;
                         break;
                     }
                     else if (startPoint.IsEqualTo(current.StartPoint, tolerance))
                     {
+                        startPoint = current.EndPoint;
                         for (int j = count; j > 0; j--)
                             output[j] = output[j - 1];
                         output[0] = current.GetReverseParameterCurve();
-                        startPoint = current.EndPoint;
                         found = done[i] = true;
                         break;
                     }
@@ -153,33 +153,33 @@ namespace Gile.AutoCAD.R25.Geometry
 
                     if (endPoint.IsEqualTo(current.StartPoint, tolerance))
                     {
-                        output[count] = current;
                         endPoint = current.EndPoint;
+                        output[count] = current;
                         found = done[i] = true;
                         break;
                     }
                     else if (endPoint.IsEqualTo(current.EndPoint, tolerance))
                     {
-                        output[count] = current.GetReverseParameterCurve();
                         endPoint = current.StartPoint;
+                        output[count] = current.GetReverseParameterCurve();
                         found = done[i] = true;
                         break;
                     }
                     else if (startPoint.IsEqualTo(current.EndPoint, tolerance))
                     {
+                        startPoint = current.StartPoint;
                         for (int j = count; j > 0; j--)
                             output[j] = output[j - 1];
                         output[0] = current;
-                        startPoint = current.StartPoint;
                         found = done[i] = true;
                         break;
                     }
                     else if (startPoint.IsEqualTo(current.StartPoint, tolerance))
                     {
+                        startPoint = current.EndPoint;
                         for (int j = count; j > 0; j--)
                             output[j] = output[j - 1];
                         output[0] = current.GetReverseParameterCurve();
-                        startPoint = current.EndPoint;
                         found = done[i] = true;
                         break;
                     }
