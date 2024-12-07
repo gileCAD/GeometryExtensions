@@ -8,8 +8,8 @@
     <Company>Gilles Chanteau</Company>
     <Product>GeometryExtension</Product>
     <Copyright>Copyright © Gilles Chanteau 2016</Copyright>
-    <AssemblyVersion>2.1.0.0</AssemblyVersion>
-    <FileVersion>2.1.0.0</FileVersion>
+    <AssemblyVersion>2.2.0.0</AssemblyVersion>
+    <FileVersion>2.2.0.0</FileVersion>
     <PlatformTarget>x64</PlatformTarget>
     <Nullable>enable</Nullable>
     <Platforms>AnyCPU;x64</Platforms>
