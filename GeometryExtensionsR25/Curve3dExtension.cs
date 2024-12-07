@@ -12,6 +12,14 @@ namespace Gile.AutoCAD.R25.Geometry
     public static class Curve3dExtension
     {
         /// <summary>
+        /// Gets the reversed curve without modifying the original one.
+        /// </summary>
+        /// <param name="curve">Instance this method applies to.</param>
+        /// <returns>A new Curve3d with reversed parameters.</returns>
+        public static Curve3d GetReversedCurve(this Curve3d curve) =>
+            ((Curve3d)curve.Clone()).GetReverseParameterCurve();
+
+        /// <summary>
         /// Order the collection by contiguous curves ([n].EndPoint equals to [n+1].StartPoint)
         /// </summary>
         /// <param name="source">Collection this method applies to.</param>
@@ -61,7 +69,7 @@ namespace Gile.AutoCAD.R25.Geometry
                     else if (endPoint.IsEqualTo(current.EndPoint, tolerance))
                     {
                         endPoint = current.StartPoint;
-                        output[count] = current.GetReverseParameterCurve();
+                        output[count] = current.GetReversedCurve();
                         found = done[i] = true;
                         break;
                     }
@@ -79,7 +87,7 @@ namespace Gile.AutoCAD.R25.Geometry
                         startPoint = current.EndPoint;
                         for (int j = count; j > 0; j--)
                             output[j] = output[j - 1];
-                        output[0] = current.GetReverseParameterCurve();
+                        output[0] = current.GetReversedCurve();
                         found = done[i] = true;
                         break;
                     }
@@ -158,7 +166,7 @@ namespace Gile.AutoCAD.R25.Geometry
                     else if (endPoint.IsEqualTo(current.EndPoint, tolerance))
                     {
                         endPoint = current.StartPoint;
-                        output[count] = current.GetReverseParameterCurve();
+                        output[count] = current.GetReversedCurve();
                         found = done[i] = true;
                         break;
                     }
@@ -176,7 +184,7 @@ namespace Gile.AutoCAD.R25.Geometry
                         startPoint = current.EndPoint;
                         for (int j = count; j > 0; j--)
                             output[j] = output[j - 1];
-                        output[0] = current.GetReverseParameterCurve();
+                        output[0] = current.GetReversedCurve();
                         found = done[i] = true;
                         break;
                     }
