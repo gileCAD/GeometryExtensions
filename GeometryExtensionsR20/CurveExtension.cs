@@ -29,10 +29,7 @@ namespace Gile.AutoCAD.R20.Geometry
         /// <param name="point">Point to check against.</param>
         /// <returns>true, if the condition is met; otherwise, false.</returns>
         /// <exception cref="System.ArgumentNullException">ArgumentNullException is thrown if <paramref name="curve"/> is null.</exception>
-        public static bool IsPointOnCurve(this Curve curve, Point3d point)
-        {
-            Assert.IsNotNull(curve, nameof(curve));
-            return curve.IsPointOnCurve(point, Tolerance.Global);
-        }
+        public static bool IsPointOnCurve(this Curve curve, Point3d point) =>
+            curve.IsPointOnCurve(point, Tolerance.Global);
     }
 }

@@ -16,11 +16,8 @@ namespace Gile.AutoCAD.R20.Geometry
         /// <param name="source">The instance to which this method applies.</param>
         /// <returns>A sequence of distinct points.</returns>
         /// <exception cref="ArgumentNullException">ArgumentException is thrown if <paramref name="source"/> is null.</exception>
-        public static IEnumerable<Point2d> RemoveDuplicates(this Point2dCollection source)
-        {
-            Assert.IsNotNull(source, nameof(source));
-            return source.RemoveDuplicates(Tolerance.Global);
-        }
+        public static IEnumerable<Point2d> RemoveDuplicates(this Point2dCollection source) =>
+            source.RemoveDuplicates(Tolerance.Global);
 
         /// <summary>
         /// Removes duplicated points using the specified Tolerance.
@@ -41,11 +38,8 @@ namespace Gile.AutoCAD.R20.Geometry
         /// <param name="source">The instance to which this method applies.</param>
         /// <returns>A sequence of distinct points.</returns>
         /// <exception cref="ArgumentNullException">ArgumentException is thrown if <paramref name="source"/> is null.</exception>
-        public static IEnumerable<Point2d> RemoveDuplicates(this IEnumerable<Point2d> source)
-        {
-            Assert.IsNotNull(source, nameof(source));
-            return source.RemoveDuplicates(Tolerance.Global);
-        }
+        public static IEnumerable<Point2d> RemoveDuplicates(this IEnumerable<Point2d> source) =>
+            source.RemoveDuplicates(Tolerance.Global);
 
         /// <summary>
         /// Removes duplicated points using the specified Tolerance.
@@ -67,11 +61,8 @@ namespace Gile.AutoCAD.R20.Geometry
         /// <param name="point">Point to search for.</param>
         /// <returns>true, if <c>point</c> is found; false, otherwise.</returns>
         /// <exception cref="ArgumentNullException">ArgumentException is thrown if <paramref name="source"/> is null.</exception>
-        public static bool Contains(this Point2dCollection source, Point2d point)
-        {
-            Assert.IsNotNull(source, nameof(source));
-            return source.Contains(point, Tolerance.Global);
-        }
+        public static bool Contains(this Point2dCollection source, Point2d point) =>
+            source.Contains(point, Tolerance.Global);
 
         /// <summary>
         /// Evaluates if the collection contains <c>point</c> using the specified tolerance.
