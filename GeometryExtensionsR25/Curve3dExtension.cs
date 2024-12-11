@@ -40,54 +40,53 @@ namespace Gile.AutoCAD.R25.Geometry
                 tolerance = Tolerance.Global;
 
             var output = new Curve3d[length];
+            Span<Curve3d> span = output;
             var done = new bool[length];
-
-            output[0] = input[0];
+            var current = input[0];
+            span[0] = current;
             done[0] = true;
             int count = 1;
-            var startPoint = output[0].StartPoint;
-            var endPoint = output[0].EndPoint;
+            var startPoint = current.StartPoint;
+            var endPoint = current.EndPoint;
 
             while (count < length)
             {
                 bool found = false;
 
-                for (int i = 0; i < length; i++)
+                for (int i = 1; i < length; i++)
                 {
                     if (done[i])
                         continue;
 
-                    var current = input[i];
+                    current = input[i];
 
                     if (endPoint.IsEqualTo(current.StartPoint, tolerance))
                     {
                         endPoint = current.EndPoint;
-                        output[count] = current;
+                        span[count] = current;
                         found = done[i] = true;
                         break;
                     }
                     else if (endPoint.IsEqualTo(current.EndPoint, tolerance))
                     {
                         endPoint = current.StartPoint;
-                        output[count] = current.GetReversedCurve();
+                        span[count] = current.GetReversedCurve();
                         found = done[i] = true;
                         break;
                     }
                     else if (startPoint.IsEqualTo(current.EndPoint, tolerance))
                     {
                         startPoint = current.StartPoint;
-                        for (int j = count; j > 0; j--)
-                            output[j] = output[j - 1];
-                        output[0] = current;
+                        span[..count].CopyTo(span[1..]);
+                        span[0] = current;
                         found = done[i] = true;
                         break;
                     }
                     else if (startPoint.IsEqualTo(current.StartPoint, tolerance))
                     {
                         startPoint = current.EndPoint;
-                        for (int j = count; j > 0; j--)
-                            output[j] = output[j - 1];
-                        output[0] = current.GetReversedCurve();
+                        span[..count].CopyTo(span[1..]);
+                        span[0] = current.GetReversedCurve();
                         found = done[i] = true;
                         break;
                     }
@@ -118,12 +117,15 @@ namespace Gile.AutoCAD.R25.Geometry
         {
             ArgumentNullException.ThrowIfNull(source);
 
+            compositeCurve = default;
+
+            if (!source.Any())
+                return false;
+
             var isValid = predicate ?? (_ => true);
 
             if (tolerance.Equals(default(Tolerance)))
                 tolerance = Tolerance.Global;
-
-            compositeCurve = default;
 
             var input = source as Curve3d[] ?? source.ToArray();
 
@@ -131,60 +133,56 @@ namespace Gile.AutoCAD.R25.Geometry
                 return false;
 
             int length = input.Length;
-            if (length < 2)
-                return false;
-
             var output = new Curve3d[length];
+            Span<Curve3d> span = output;
             var done = new bool[length];
-
-            output[0] = input[0];
+            var current = input[0];
+            span[0] = current;
             done[0] = true;
             int count = 1;
-            var startPoint = output[0].StartPoint;
-            var endPoint = output[0].EndPoint;
+            var startPoint = current.StartPoint;
+            var endPoint = current.EndPoint;
 
             while (count < length)
             {
                 bool found = false;
 
-                for (int i = 0; i < length; i++)
+                for (int i = 1; i < length; i++)
                 {
                     if (done[i])
                         continue;
 
-                    var current = input[i];
+                    current = input[i];
                     if (!isValid(current))
                         return false;
 
                     if (endPoint.IsEqualTo(current.StartPoint, tolerance))
                     {
                         endPoint = current.EndPoint;
-                        output[count] = current;
+                        span[count] = current;
                         found = done[i] = true;
                         break;
                     }
                     else if (endPoint.IsEqualTo(current.EndPoint, tolerance))
                     {
                         endPoint = current.StartPoint;
-                        output[count] = current.GetReversedCurve();
+                        span[count] = current.GetReversedCurve();
                         found = done[i] = true;
                         break;
                     }
                     else if (startPoint.IsEqualTo(current.EndPoint, tolerance))
                     {
                         startPoint = current.StartPoint;
-                        for (int j = count; j > 0; j--)
-                            output[j] = output[j - 1];
-                        output[0] = current;
+                        span[..count].CopyTo(span[1..]);
+                        span[0] = current;
                         found = done[i] = true;
                         break;
                     }
                     else if (startPoint.IsEqualTo(current.StartPoint, tolerance))
                     {
                         startPoint = current.EndPoint;
-                        for (int j = count; j > 0; j--)
-                            output[j] = output[j - 1];
-                        output[0] = current.GetReversedCurve();
+                        span[..count].CopyTo(span[1..]);
+                        span[0] = current.GetReversedCurve();
                         found = done[i] = true;
                         break;
                     }

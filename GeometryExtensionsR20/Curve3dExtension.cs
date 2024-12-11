@@ -41,23 +41,23 @@ namespace Gile.AutoCAD.R20.Geometry
 
             var output = new Curve3d[length];
             var done = new bool[length];
-
-            output[0] = input[0];
+            var current = input[0];
+            output[0] = current;
             done[0] = true;
             int count = 1;
-            var startPoint = output[0].StartPoint;
-            var endPoint = output[0].EndPoint;
+            var startPoint = current.StartPoint;
+            var endPoint = current.EndPoint;
 
             while (count < length)
             {
                 bool found = false;
 
-                for (int i = 0; i < length; i++)
+                for (int i = 1; i < length; i++)
                 {
                     if (done[i])
                         continue;
 
-                    var current = input[i];
+                    current = input[i];
 
                     if (endPoint.IsEqualTo(current.StartPoint, tolerance))
                     {
@@ -118,12 +118,15 @@ namespace Gile.AutoCAD.R20.Geometry
         {
             Assert.IsNotNull(source, nameof(source));
 
+            compositeCurve = default;
+
+            if (!source.Any())
+                return false;
+
             var isValid = predicate ?? (_ => true);
 
             if (tolerance.Equals(default(Tolerance)))
                 tolerance = Tolerance.Global;
-
-            compositeCurve = default;
 
             var input = source as Curve3d[] ?? source.ToArray();
 
@@ -131,28 +134,26 @@ namespace Gile.AutoCAD.R20.Geometry
                 return false;
 
             int length = input.Length;
-            if (length < 2)
-                return false;
 
             var output = new Curve3d[length];
             var done = new bool[length];
-
-            output[0] = input[0];
+            var current = input[0];
+            output[0] = current;
             done[0] = true;
             int count = 1;
-            var startPoint = output[0].StartPoint;
-            var endPoint = output[0].EndPoint;
+            var startPoint = current.StartPoint;
+            var endPoint = current.EndPoint;
 
             while (count < length)
             {
                 bool found = false;
 
-                for (int i = 0; i < length; i++)
+                for (int i = 1; i < length; i++)
                 {
                     if (done[i])
                         continue;
 
-                    var current = input[i];
+                    current = input[i];
                     if (!isValid(current))
                         return false;
 

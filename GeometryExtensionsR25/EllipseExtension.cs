@@ -1,6 +1,9 @@
-﻿using System;
-using Autodesk.AutoCAD.DatabaseServices;
+﻿using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
+
+using System;
+
+using static System.Math;
 
 namespace Gile.AutoCAD.R25.Geometry
 {
@@ -35,7 +38,7 @@ namespace Gile.AutoCAD.R25.Geometry
         public static double GetParamAtAngle(this Ellipse ellipse, double angle)
         {
             ArgumentNullException.ThrowIfNull(ellipse);
-            return Math.Atan2(ellipse.MajorRadius * Math.Sin(angle), ellipse.MinorRadius * Math.Cos(angle));
+            return Atan2(ellipse.MajorRadius * Sin(angle), ellipse.MinorRadius * Cos(angle));
         }
 
         /// <summary>
@@ -48,7 +51,7 @@ namespace Gile.AutoCAD.R25.Geometry
         public static double GetAngleAtParam(this Ellipse ellipse, double param)
         {
             ArgumentNullException.ThrowIfNull(ellipse);
-            return Math.Atan2(ellipse.MinorRadius * Math.Sin(param), ellipse.MajorRadius * Math.Cos(param));
+            return Atan2(ellipse.MinorRadius * Sin(param), ellipse.MajorRadius * Cos(param));
         }
     }
 }

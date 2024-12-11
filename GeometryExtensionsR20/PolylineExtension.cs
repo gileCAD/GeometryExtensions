@@ -1,8 +1,10 @@
-﻿using System;
-using Autodesk.AutoCAD.ApplicationServices;
-using Autodesk.AutoCAD.DatabaseServices;
+﻿using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
 using Autodesk.AutoCAD.Runtime;
+
+using System;
+
+using static System.Math;
 
 namespace Gile.AutoCAD.R20.Geometry
 {
@@ -45,7 +47,7 @@ namespace Gile.AutoCAD.R20.Geometry
             }
             Polyline pl2 = (Polyline)pl1.Clone();
 
-            if (Math.Round(param, 6) == index)
+            if (Round(param, 6) == index)
             {
                 for (int i = pl1.NumberOfVertices - 1; i > index; i--)
                 {
@@ -131,10 +133,8 @@ namespace Gile.AutoCAD.R20.Geometry
         /// <param name="pline">The instance to which this method applies.</param>
         /// <returns>The Polyline centroid (WCS coordinates).</returns>
         /// <exception cref="ArgumentNullException">ArgumentException is thrown if <paramref name="pline"/> is null.</exception>
-        public static Point3d Centroid(this Polyline pline)
-        {
-            return pline.Centroid2d().Convert3d(pline.Normal, pline.Elevation);
-        }
+        public static Point3d Centroid(this Polyline pline) =>
+            pline.Centroid2d().Convert3d(pline.Normal, pline.Elevation);
 
         /// <summary>
         /// Adds an arc (fillet), when possible, at each vertex.
@@ -171,15 +171,15 @@ namespace Gile.AutoCAD.R20.Geometry
             LineSegment2d seg2 = pline.GetLineSegment2dAt(index);
             Vector2d vec1 = seg1.StartPoint - seg1.EndPoint;
             Vector2d vec2 = seg2.EndPoint - seg2.StartPoint;
-            double angle = (Math.PI - vec1.GetAngleTo(vec2)) / 2.0;
-            double dist = radius * Math.Tan(angle);
+            double angle = (PI - vec1.GetAngleTo(vec2)) / 2.0;
+            double dist = radius * Tan(angle);
             if (dist == 0.0 || dist > seg1.Length || dist > seg2.Length)
             {
                 return 0;
             }
             Point2d pt1 = seg1.EndPoint + vec1.GetNormal() * dist;
             Point2d pt2 = seg2.StartPoint + vec2.GetNormal() * dist;
-            double bulge = Math.Tan(angle / 2.0);
+            double bulge = Tan(angle / 2.0);
             if (Clockwise(seg1.StartPoint, seg1.EndPoint, seg2.EndPoint))
             {
                 bulge = -bulge;
@@ -262,11 +262,8 @@ namespace Gile.AutoCAD.R20.Geometry
         /// <param name="point">The point to evaluate.</param>
         /// <returns>A value of PointContainment.</returns>
         /// <exception cref="ArgumentNullException">ArgumentException is thrown if <paramref name="pline"/> is null.</exception>
-        public static PointContainment GetPointContainment(this Polyline pline, Point3d point)
-        {
-            Assert.IsNotNull(pline, nameof(pline));
-            return pline.GetPointContainment(point, Tolerance.Global.EqualPoint);
-        }
+        public static PointContainment GetPointContainment(this Polyline pline, Point3d point) =>
+            pline.GetPointContainment(point, Tolerance.Global.EqualPoint);
 
         /// <summary>
         /// Evaluates if the point is inside, outside or on the Polyline using the specified Tolerance.
@@ -285,7 +282,7 @@ namespace Gile.AutoCAD.R20.Geometry
             if (!pline.Closed)
                 throw new InvalidOperationException("Polyline must be closed");
 
-            string filename = "AcMPolygonObj" + Application.Version.Major + ".dbx";
+            string filename = "AcMPolygonObj" + Autodesk.AutoCAD.ApplicationServices.Core.Application.Version.Major + ".dbx";
             if (!SystemObjects.DynamicLinker.IsModuleLoaded(filename))
                 SystemObjects.DynamicLinker.LoadModule(filename, false, false);
 
@@ -369,10 +366,8 @@ namespace Gile.AutoCAD.R20.Geometry
         /// <param name="bulge">The bulge value.</param>
         /// <param name="factor">The scale factor.</param>
         /// <returns>The scaled bulge value.</returns>
-        public static double ScaleBulge(double bulge, double factor)
-        {
-            return Math.Tan(Math.Atan(bulge) * factor);
-        }
+        public static double ScaleBulge(double bulge, double factor) =>
+            Tan(Atan(bulge) * factor);
 
         /// <summary>
         /// Evaluates if the points are clockwise.
@@ -381,9 +376,7 @@ namespace Gile.AutoCAD.R20.Geometry
         /// <param name="p2">Second point</param>
         /// <param name="p3">Third point</param>
         /// <returns>true, if the points are clockwise; false, otherwise.</returns>
-        private static bool Clockwise(Point2d p1, Point2d p2, Point2d p3)
-        {
-            return ((p2.X - p1.X) * (p3.Y - p1.Y) - (p2.Y - p1.Y) * (p3.X - p1.X)) < 1e-8;
-        }
+        private static bool Clockwise(Point2d p1, Point2d p2, Point2d p3) =>
+            ((p2.X - p1.X) * (p3.Y - p1.Y) - (p2.Y - p1.Y) * (p3.X - p1.X)) < 1e-8;
     }
 }
