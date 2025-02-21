@@ -141,80 +141,86 @@ namespace Gile.AutoCAD.R25.Geometry
             using var brep = new Brep(region);
             foreach (var complex in brep.Complexes)
             {
-                foreach (var loop in complex.Shells.First().Faces.First().Loops)
+                foreach (var shell in complex.Shells)
                 {
-                    var edgePtrCollection = new Curve2dCollection();
-                    var edgeTypeCollection = new IntegerCollection();
-                    foreach (var edge in loop.Edges.Select(e => ((ExternalCurve3d)e.Curve).NativeCurve).ToOrderedArray(tolerance))
+                    foreach (var face in shell.Faces)
                     {
-                        switch (edge)
+                        foreach (var loop in face.Loops)
                         {
-                            case LineSegment3d lineSegment3D:
-                                edgePtrCollection.Add(
-                                    new LineSegment2d(
-                                        lineSegment3D.StartPoint.Convert2d(plane),
-                                        lineSegment3D.EndPoint.Convert2d(plane)));
-                                edgeTypeCollection.Add(1);
-                                break;
-                            case CircularArc3d circularArc3D:
-                                if (circularArc3D.EndAngle - circularArc3D.StartAngle == twoPI)
+                            var edgePtrCollection = new Curve2dCollection();
+                            var edgeTypeCollection = new IntegerCollection();
+                            foreach (var edge in loop.Edges.Select(e => ((ExternalCurve3d)e.Curve).NativeCurve).ToOrderedArray(tolerance))
+                            {
+                                switch (edge)
                                 {
-                                    edgePtrCollection.Add(
-                                        new CircularArc2d(
-                                            circularArc3D.Center.Convert2d(plane),
-                                            circularArc3D.Radius));
+                                    case LineSegment3d lineSegment3D:
+                                        edgePtrCollection.Add(
+                                            new LineSegment2d(
+                                                lineSegment3D.StartPoint.Convert2d(plane),
+                                                lineSegment3D.EndPoint.Convert2d(plane)));
+                                        edgeTypeCollection.Add(1);
+                                        break;
+                                    case CircularArc3d circularArc3D:
+                                        if (circularArc3D.EndAngle - circularArc3D.StartAngle == twoPI)
+                                        {
+                                            edgePtrCollection.Add(
+                                                new CircularArc2d(
+                                                    circularArc3D.Center.Convert2d(plane),
+                                                    circularArc3D.Radius));
+                                        }
+                                        else
+                                        {
+                                            bool isClockwise = circularArc3D.Normal.IsEqualTo(region.Normal.Negate());
+                                            double angle = isClockwise ?
+                                                -circularArc3D.ReferenceVector.Convert2d(plane).Angle :
+                                                circularArc3D.ReferenceVector.Convert2d(plane).Angle;
+                                            edgePtrCollection.Add(
+                                                new CircularArc2d(
+                                                    circularArc3D.Center.Convert2d(plane),
+                                                    circularArc3D.Radius,
+                                                    Standardise(circularArc3D.StartAngle + angle),
+                                                    Standardise(circularArc3D.EndAngle + angle),
+                                                    Vector2d.XAxis,
+                                                    isClockwise));
+                                        }
+                                        edgeTypeCollection.Add(2);
+                                        break;
+                                    case EllipticalArc3d ellipticalArc3D:
+                                        edgePtrCollection.Add(
+                                            new EllipticalArc2d(
+                                                ellipticalArc3D.Center.Convert2d(plane),
+                                                ellipticalArc3D.MajorAxis.Convert2d(plane),
+                                                ellipticalArc3D.MinorAxis.Convert2d(plane),
+                                                ellipticalArc3D.MajorRadius,
+                                                ellipticalArc3D.MinorRadius,
+                                                ellipticalArc3D.StartAngle,
+                                                ellipticalArc3D.EndAngle));
+                                        edgeTypeCollection.Add(3);
+                                        break;
+                                    case NurbCurve3d nurbCurve3D:
+                                        var ctrlPts = new Point2dCollection();
+                                        for (int i = 0; i < nurbCurve3D.NumberOfControlPoints; i++)
+                                        {
+                                            ctrlPts.Add(nurbCurve3D.ControlPointAt(i).Convert2d(plane));
+                                        }
+                                        edgePtrCollection.Add(
+                                            new NurbCurve2d(
+                                                nurbCurve3D.Degree,
+                                                nurbCurve3D.Knots,
+                                                ctrlPts,
+                                                nurbCurve3D.IsPeriodic(out double _)));
+                                        edgeTypeCollection.Add(4);
+                                        break;
+                                    default:
+                                        break;
                                 }
-                                else
-                                {
-                                    bool isClockwise = circularArc3D.Normal.IsEqualTo(region.Normal.Negate());
-                                    double angle = isClockwise ?
-                                        -circularArc3D.ReferenceVector.Convert2d(plane).Angle :
-                                        circularArc3D.ReferenceVector.Convert2d(plane).Angle;
-                                    edgePtrCollection.Add(
-                                        new CircularArc2d(
-                                            circularArc3D.Center.Convert2d(plane),
-                                            circularArc3D.Radius,
-                                            Standardise(circularArc3D.StartAngle + angle),
-                                            Standardise(circularArc3D.EndAngle + angle),
-                                            Vector2d.XAxis,
-                                            isClockwise));
-                                }
-                                edgeTypeCollection.Add(2);
-                                break;
-                            case EllipticalArc3d ellipticalArc3D:
-                                edgePtrCollection.Add(
-                                    new EllipticalArc2d(
-                                        ellipticalArc3D.Center.Convert2d(plane),
-                                        ellipticalArc3D.MajorAxis.Convert2d(plane),
-                                        ellipticalArc3D.MinorAxis.Convert2d(plane),
-                                        ellipticalArc3D.MajorRadius,
-                                        ellipticalArc3D.MinorRadius,
-                                        ellipticalArc3D.StartAngle,
-                                        ellipticalArc3D.EndAngle));
-                                edgeTypeCollection.Add(3);
-                                break;
-                            case NurbCurve3d nurbCurve3D:
-                                var ctrlPts = new Point2dCollection();
-                                for (int i = 0; i < nurbCurve3D.NumberOfControlPoints; i++)
-                                {
-                                    ctrlPts.Add(nurbCurve3D.ControlPointAt(i).Convert2d(plane));
-                                }
-                                edgePtrCollection.Add(
-                                    new NurbCurve2d(
-                                        nurbCurve3D.Degree,
-                                        nurbCurve3D.Knots,
-                                        ctrlPts,
-                                        nurbCurve3D.IsPeriodic(out double _)));
-                                edgeTypeCollection.Add(4);
-                                break;
-                            default:
-                                break;
+                            }
+                            if (loop.LoopType == LoopType.LoopExterior)
+                                yield return (HatchLoopTypes.External, edgePtrCollection, edgeTypeCollection);
+                            else
+                                yield return (HatchLoopTypes.Default, edgePtrCollection, edgeTypeCollection);
                         }
                     }
-                    if (loop.LoopType == LoopType.LoopExterior)
-                        yield return (HatchLoopTypes.External, edgePtrCollection, edgeTypeCollection);
-                    else
-                        yield return (HatchLoopTypes.Default, edgePtrCollection, edgeTypeCollection);
                 }
             }
         }
