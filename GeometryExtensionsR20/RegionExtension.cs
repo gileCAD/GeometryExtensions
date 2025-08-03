@@ -73,10 +73,11 @@ namespace Gile.AutoCAD.R20.Geometry
             {
                 foreach (var loop in brep.Faces.SelectMany(face => face.Loops))
                 {
-                    var curves3d = loop.Edges.Select(edge => ((ExternalCurve3d)edge.Curve).NativeCurve);
-                    if (!curves3d.Skip(1).Any())
+                    var externalCurves3d = loop.Edges.Select(e => (ExternalCurve3d)e.Curve).ToArray();
+                    var curves3d = externalCurves3d.Select(c => c.NativeCurve).ToArray();
+                    if (curves3d.Length == 1)
                     {
-                        yield return Curve.CreateFromGeCurve(curves3d.First());
+                        yield return Curve.CreateFromGeCurve(curves3d[0]);
                     }
                     else if (curves3d.TryConvertToCompositeCurve(out CompositeCurve3d compositeCurve, tolerance, c => c is LineSegment3d || c is CircularArc3d))
                     {
@@ -88,6 +89,10 @@ namespace Gile.AutoCAD.R20.Geometry
                         {
                             yield return Curve.CreateFromGeCurve(curve3d);
                         }
+                    }
+                    foreach (ExternalCurve3d externalCurve3d in externalCurves3d)
+                    {
+                        externalCurve3d.Dispose();
                     }
                 }
             }
@@ -111,10 +116,11 @@ namespace Gile.AutoCAD.R20.Geometry
             {
                 foreach (var loop in brep.Faces.SelectMany(f => f.Loops))
                 {
-                    var curves3d = loop.Edges.Select(edge => ((ExternalCurve3d)edge.Curve).NativeCurve);
-                    if (!curves3d.Skip(1).Any())
+                    var externalCurves3d = loop.Edges.Select(e => (ExternalCurve3d)e.Curve).ToArray();
+                    var curves3d = externalCurves3d.Select(c => c.NativeCurve).ToArray();
+                    if (curves3d.Length == 1)
                     {
-                        yield return (loop.LoopType, new[] { Curve.CreateFromGeCurve(curves3d.First()) });
+                        yield return (loop.LoopType, new[] { Curve.CreateFromGeCurve(curves3d[0]) });
                     }
                     else if (curves3d.TryConvertToCompositeCurve(out CompositeCurve3d compositeCurve, tolerance, c => c is LineSegment3d || c is CircularArc3d))
                     {
@@ -123,6 +129,10 @@ namespace Gile.AutoCAD.R20.Geometry
                     else
                     {
                         yield return (loop.LoopType, curves3d.Select(c => Curve.CreateFromGeCurve(c)).ToArray());
+                    }
+                    foreach (ExternalCurve3d externalCurve3d in externalCurves3d)
+                    {
+                        externalCurve3d.Dispose();
                     }
                 }
             }
@@ -163,9 +173,10 @@ namespace Gile.AutoCAD.R20.Geometry
                             {
                                 var edgePtrCollection = new Curve2dCollection();
                                 var edgeTypeCollection = new IntegerCollection();
-                                foreach (var edge in loop.Edges.Select(e => ((ExternalCurve3d)e.Curve).NativeCurve).ToOrderedArray(tolerance))
+                                var externalCurves3d = loop.Edges.Select(e => (ExternalCurve3d)e.Curve).ToArray();
+                                foreach (var curve3d in externalCurves3d.Select(e => e.NativeCurve).ToOrderedArray(tolerance))
                                 {
-                                    switch (edge)
+                                    switch (curve3d)
                                     {
                                         case LineSegment3d lineSegment3D:
                                             edgePtrCollection.Add(
@@ -228,6 +239,10 @@ namespace Gile.AutoCAD.R20.Geometry
                                         default:
                                             break;
                                     }
+                                }
+                                foreach (ExternalCurve3d externalCurve3d in externalCurves3d)
+                                {
+                                    externalCurve3d.Dispose();
                                 }
                                 if (loop.LoopType == LoopType.LoopExterior)
                                     yield return (HatchLoopTypes.External, edgePtrCollection, edgeTypeCollection);
