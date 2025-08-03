@@ -66,6 +66,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assert.cs" />
+    <Compile Include="BoundaryLoopExtension.cs" />
     <Compile Include="CircularArc2dExtension.cs" />
     <Compile Include="CircularArc3dExtension.cs" />
     <Compile Include="Curve2dExtension.cs" />
