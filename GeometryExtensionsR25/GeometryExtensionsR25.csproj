@@ -45,7 +45,7 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="AcMPolygonMGD">
-      <HintPath>F:\Program Files\Autodesk\AutoCAD 2025\AcMPolygonMGD.dll</HintPath>
+      <HintPath>F:\Program Files\Autodesk\AutoCAD 2026\AcMPolygonMGD.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>
