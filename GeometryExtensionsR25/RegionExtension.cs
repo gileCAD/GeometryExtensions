@@ -63,8 +63,7 @@ namespace Gile.AutoCAD.R25.Geometry
             using var brep = new Brep(region);
             foreach (var loop in brep.Faces.SelectMany(face => face.Loops))
             {
-                var externalCurves3d = loop.Edges.Select(e => (ExternalCurve3d)e.Curve).ToArray();
-                var curves3d = externalCurves3d.Select(c => c.NativeCurve).ToArray();
+                var curves3d = loop.GetNativeCurves().ToArray();
                 if (curves3d.Length == 1)
                 {
                     yield return Curve.CreateFromGeCurve(curves3d[0]);
@@ -79,10 +78,6 @@ namespace Gile.AutoCAD.R25.Geometry
                     {
                         yield return Curve.CreateFromGeCurve(curve3d);
                     }
-                }
-                foreach (ExternalCurve3d externalCurve3d in externalCurves3d)
-                {
-                    externalCurve3d.Dispose();
                 }
             }
         }
@@ -104,8 +99,7 @@ namespace Gile.AutoCAD.R25.Geometry
             using var brep = new Brep(region); 
             foreach (var loop in brep.Faces.SelectMany(f => f.Loops))
             {
-                var externalCurves3d = loop.Edges.Select(e => (ExternalCurve3d)e.Curve).ToArray();
-                var curves3d = externalCurves3d.Select(c => c.NativeCurve).ToArray();
+                var curves3d = loop.GetNativeCurves().ToArray();
                 if (curves3d.Length == 1)
                 {
                     yield return (loop.LoopType, new[] { Curve.CreateFromGeCurve(curves3d[0]) });
@@ -117,10 +111,6 @@ namespace Gile.AutoCAD.R25.Geometry
                 else
                 {
                     yield return (loop.LoopType, curves3d.Select(c => Curve.CreateFromGeCurve(c)).ToArray());
-                }
-                foreach (ExternalCurve3d externalCurve3d in externalCurves3d)
-                {
-                    externalCurve3d.Dispose();
                 }
             }
         }
@@ -159,8 +149,7 @@ namespace Gile.AutoCAD.R25.Geometry
                         {
                             var edgePtrCollection = new Curve2dCollection();
                             var edgeTypeCollection = new IntegerCollection();
-                            var externalCurves3d = loop.Edges.Select(e => (ExternalCurve3d)e.Curve).ToArray();
-                            foreach (var curve3d in externalCurves3d.Select(c => c.NativeCurve).ToOrderedArray(tolerance))
+                            foreach (var curve3d in loop.GetNativeCurves().ToOrderedArray(tolerance))
                             {
                                 switch (curve3d)
                                 {
@@ -226,10 +215,7 @@ namespace Gile.AutoCAD.R25.Geometry
                                         break;
                                 }
                             }
-                            foreach (ExternalCurve3d externalCurve3d in externalCurves3d)
-                            {
-                                externalCurve3d.Dispose();
-                            }
+                            
                             if (loop.LoopType == LoopType.LoopExterior)
                                 yield return (HatchLoopTypes.External, edgePtrCollection, edgeTypeCollection);
                             else
