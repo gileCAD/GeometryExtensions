@@ -14,8 +14,8 @@ namespace Gile.AutoCAD.R25.Geometry
         /// <summary>
         /// Gets the native curves constituting the loop (implicitly disposes of the ExternalCurve3d instances).
         /// </summary>
-        /// <param name="loop">Boundary Represention loop.</param>
-        /// <returns></returns>
+        /// <param name="loop">Brep loop.</param>
+        /// <returns>The native curves constituting the loop.</returns>
         public static IEnumerable<Curve3d> GetNativeCurves(this BoundaryLoop loop)
         {
             ArgumentNullException.ThrowIfNull(loop);
