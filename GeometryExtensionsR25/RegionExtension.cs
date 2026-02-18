@@ -5,8 +5,6 @@ using Autodesk.AutoCAD.Geometry;
 using System.Collections.Generic;
 using System.Linq;
 
-using static System.Math;
-
 namespace Gile.AutoCAD.R25.Geometry
 {
     /// <summary>
@@ -57,28 +55,10 @@ namespace Gile.AutoCAD.R25.Geometry
         {
             System.ArgumentNullException.ThrowIfNull(region);
 
-            if (tolerance.Equals(default(Tolerance)))
-                tolerance = Tolerance.Global;
-
             using var brep = new Brep(region);
-            foreach (var loop in brep.Faces.SelectMany(face => face.Loops))
+            foreach (var curve in brep.Faces.SelectMany(face => face.Loops).SelectMany(loop => loop.GetCurves(tolerance)))
             {
-                var curves3d = loop.GetNativeCurves().ToArray();
-                if (curves3d.Length == 1)
-                {
-                    yield return Curve.CreateFromGeCurve(curves3d[0]);
-                }
-                else if (curves3d.TryConvertToCompositeCurve(out CompositeCurve3d? compositeCurve, tolerance, c => c is LineSegment3d || c is CircularArc3d))
-                {
-                    yield return (Polyline)Curve.CreateFromGeCurve(compositeCurve);
-                }
-                else
-                {
-                    foreach (Curve3d curve3d in curves3d)
-                    {
-                        yield return Curve.CreateFromGeCurve(curve3d);
-                    }
-                }
+                yield return curve;
             }
         }
 
@@ -93,25 +73,10 @@ namespace Gile.AutoCAD.R25.Geometry
         {
             System.ArgumentNullException.ThrowIfNull(region);
 
-            if (tolerance.Equals(default(Tolerance)))
-                tolerance = Tolerance.Global;
-
-            using var brep = new Brep(region); 
-            foreach (var loop in brep.Faces.SelectMany(f => f.Loops))
+            using var brep = new Brep(region);
+            foreach (var loop in brep.Faces.SelectMany(face => face.Loops))
             {
-                var curves3d = loop.GetNativeCurves().ToArray();
-                if (curves3d.Length == 1)
-                {
-                    yield return (loop.LoopType, new[] { Curve.CreateFromGeCurve(curves3d[0]) });
-                }
-                else if (curves3d.TryConvertToCompositeCurve(out CompositeCurve3d? compositeCurve, tolerance, c => c is LineSegment3d || c is CircularArc3d))
-                {
-                    yield return (loop.LoopType, new[] { (Polyline)Curve.CreateFromGeCurve(compositeCurve) });
-                }
-                else
-                {
-                    yield return (loop.LoopType, curves3d.Select(c => Curve.CreateFromGeCurve(c)).ToArray());
-                }
+                yield return (loop.LoopType, loop.GetCurves(tolerance).ToArray());
             }
         }
 
@@ -126,103 +91,10 @@ namespace Gile.AutoCAD.R25.Geometry
         {
             System.ArgumentNullException.ThrowIfNull(region);
 
-            if (tolerance.Equals(default(Tolerance)))
-                tolerance = Tolerance.Global;
-
-            var plane = new Plane(Point3d.Origin, region.Normal);
-
-            double twoPI = PI * 2.0;
-
-            double Standardise(double angle) =>
-                angle < 0 ? angle + twoPI :
-                twoPI < angle ? angle - twoPI :
-                angle;
-
             using var brep = new Brep(region);
-            foreach (var complex in brep.Complexes)
+            foreach (var item in brep.Faces.SelectMany(face => face.GetHatchLoops(tolerance)))
             {
-                foreach (var shell in complex.Shells)
-                {
-                    foreach (var face in shell.Faces)
-                    {
-                        foreach (var loop in face.Loops)
-                        {
-                            var edgePtrCollection = new Curve2dCollection();
-                            var edgeTypeCollection = new IntegerCollection();
-                            foreach (var curve3d in loop.GetNativeCurves().ToOrderedArray(tolerance))
-                            {
-                                switch (curve3d)
-                                {
-                                    case LineSegment3d lineSegment3D:
-                                        edgePtrCollection.Add(
-                                            new LineSegment2d(
-                                                lineSegment3D.StartPoint.Convert2d(plane),
-                                                lineSegment3D.EndPoint.Convert2d(plane)));
-                                        edgeTypeCollection.Add(1);
-                                        break;
-                                    case CircularArc3d circularArc3D:
-                                        if (circularArc3D.EndAngle - circularArc3D.StartAngle == twoPI)
-                                        {
-                                            edgePtrCollection.Add(
-                                                new CircularArc2d(
-                                                    circularArc3D.Center.Convert2d(plane),
-                                                    circularArc3D.Radius));
-                                        }
-                                        else
-                                        {
-                                            bool isClockwise = circularArc3D.Normal.IsEqualTo(region.Normal.Negate());
-                                            double angle = isClockwise ?
-                                                -circularArc3D.ReferenceVector.Convert2d(plane).Angle :
-                                                circularArc3D.ReferenceVector.Convert2d(plane).Angle;
-                                            edgePtrCollection.Add(
-                                                new CircularArc2d(
-                                                    circularArc3D.Center.Convert2d(plane),
-                                                    circularArc3D.Radius,
-                                                    Standardise(circularArc3D.StartAngle + angle),
-                                                    Standardise(circularArc3D.EndAngle + angle),
-                                                    Vector2d.XAxis,
-                                                    isClockwise));
-                                        }
-                                        edgeTypeCollection.Add(2);
-                                        break;
-                                    case EllipticalArc3d ellipticalArc3D:
-                                        edgePtrCollection.Add(
-                                            new EllipticalArc2d(
-                                                ellipticalArc3D.Center.Convert2d(plane),
-                                                ellipticalArc3D.MajorAxis.Convert2d(plane),
-                                                ellipticalArc3D.MinorAxis.Convert2d(plane),
-                                                ellipticalArc3D.MajorRadius,
-                                                ellipticalArc3D.MinorRadius,
-                                                ellipticalArc3D.StartAngle,
-                                                ellipticalArc3D.EndAngle));
-                                        edgeTypeCollection.Add(3);
-                                        break;
-                                    case NurbCurve3d nurbCurve3D:
-                                        var ctrlPts = new Point2dCollection();
-                                        for (int i = 0; i < nurbCurve3D.NumberOfControlPoints; i++)
-                                        {
-                                            ctrlPts.Add(nurbCurve3D.ControlPointAt(i).Convert2d(plane));
-                                        }
-                                        edgePtrCollection.Add(
-                                            new NurbCurve2d(
-                                                nurbCurve3D.Degree,
-                                                nurbCurve3D.Knots,
-                                                ctrlPts,
-                                                nurbCurve3D.IsPeriodic(out double _)));
-                                        edgeTypeCollection.Add(4);
-                                        break;
-                                    default:
-                                        break;
-                                }
-                            }
-                            
-                            if (loop.LoopType == LoopType.LoopExterior)
-                                yield return (HatchLoopTypes.External, edgePtrCollection, edgeTypeCollection);
-                            else
-                                yield return (HatchLoopTypes.Default, edgePtrCollection, edgeTypeCollection);
-                        }
-                    }
-                }
+                yield return item;
             }
         }
 
